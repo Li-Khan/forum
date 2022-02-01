@@ -1,0 +1,13 @@
+{{ template "base" }}
+
+{{define "title"}}Sign up{{end}}
+
+{{ define "main" }}
+<form action="/user/signup" method="POST">
+    <label>Login <input type="text" name="login" placeholder="Aboba" required></label>
+    <label>Email <input type="email" name="email" placeholder="Biba@boba.com" required></label>
+    <label>Password <input type="password" name="password" placeholder="qwerty1234" required></label>
+    <label>Confirm password <input type="password" name="confirm" placeholder="qwerty1234" required></label>
+    <input type="submit">
+</form>
+{{ end }}

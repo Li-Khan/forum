@@ -1,0 +1,11 @@
+{{ template "base" }}
+
+{{ define "title" }}Sign in{{end}}
+
+{{ define "main" }}
+<form action="/user/signin" method="POST">
+    <label>Login <input type="text" name="login" placeholder="Aboba" required></label>
+    <label>Password <input type="text" name="password" placeholder="qwerty1234" required></label>
+    <input type="submit">
+</form>
+{{ end }}

@@ -1,6 +1,8 @@
 package web
 
-import "net/http"
+import (
+	"net/http"
+)
 
 // Routes - initializes routes
 func (app *Application) Routes() *http.ServeMux {
@@ -18,6 +20,10 @@ func (app *Application) Routes() *http.ServeMux {
 	mux.HandleFunc("/create/", createRedirect)
 	mux.HandleFunc("/create/post", app.createPost)
 	mux.HandleFunc("/create/comment", app.createComment)
+
+	fileServer := http.FileServer(neuteredFileSystem{http.Dir("./ui/static")})
+	mux.Handle("/static", http.NotFoundHandler())
+	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	return mux
 }

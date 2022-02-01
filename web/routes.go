@@ -8,14 +8,14 @@ func (app *Application) Routes() *http.ServeMux {
 
 	mux.HandleFunc("/", app.home)
 	// user handlers
-	mux.HandleFunc("/user/", redirect)
+	mux.HandleFunc("/user/", userRedirect)
 	mux.HandleFunc("/user/signin", app.signin)
 	mux.HandleFunc("/user/signup", app.signup)
+	mux.HandleFunc("/user/logout", app.signout)
 	mux.HandleFunc("/user/profile", app.profile)
-	mux.HandleFunc("/user/logout", app.logout)
 
 	// create handlers
-	mux.HandleFunc("/create/", redirect)
+	mux.HandleFunc("/create/", createRedirect)
 	mux.HandleFunc("/create/post", app.createPost)
 	mux.HandleFunc("/create/comment", app.createComment)
 

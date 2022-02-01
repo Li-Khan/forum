@@ -10,13 +10,13 @@ import (
 // home - main page handler
 func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowed(w)
 		return
 	}
 
@@ -29,14 +29,14 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
 	err = ts.Execute(w, nil)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 	}
 }
 
@@ -50,7 +50,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		err = ts.Execute(w, nil)
 		if err != nil {
 			app.ErrorLog.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			app.serverError(w, err)
 			return
 		}
 	case http.MethodPost:
@@ -79,7 +79,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	default:
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowed(w)
 	}
 }
 
@@ -93,7 +93,7 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		err = ts.Execute(w, nil)
 		if err != nil {
 			app.ErrorLog.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			app.serverError(w, err)
 			return
 		}
 	case http.MethodPost:
@@ -120,14 +120,14 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	default:
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowed(w)
 	}
 }
 
 func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowed(w)
 		return
 	}
 	// Обработка выхода
@@ -137,13 +137,13 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowed(w)
 		return
 	}
 
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -156,14 +156,14 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
 	err = ts.Execute(w, nil)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 	}
 }
 
@@ -177,7 +177,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.ErrorLog.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
@@ -187,7 +187,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		err = ts.Execute(w, nil)
 		if err != nil {
 			app.ErrorLog.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			app.serverError(w, err)
 			return
 		}
 	case http.MethodPost:
@@ -204,7 +204,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	default:
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowed(w)
 	}
 }
 

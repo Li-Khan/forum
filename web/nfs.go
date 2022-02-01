@@ -9,6 +9,7 @@ type neuteredFileSystem struct {
 	fs http.FileSystem
 }
 
+// Open ...
 func (nfs neuteredFileSystem) Open(path string) (http.File, error) {
 	f, err := nfs.fs.Open(path)
 	if err != nil {

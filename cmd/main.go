@@ -18,7 +18,7 @@ func main() {
 	dsn := flag.String("dsn", "forum.db", "Name of the database")
 	flag.Parse()
 
-	// colors for logs
+	// цвета для логгирования
 	colorRed := "\033[31m"
 	colorGreen := "\033[32m"
 
@@ -31,10 +31,18 @@ func main() {
 		return
 	}
 
+	// Инициализирую новый кэш шаблна...
+	templateCache, err := web.NewTemplateCache("./ui/html/")
+	if err != nil {
+		errorLog.Println(err)
+		return
+	}
+
 	app := web.Application{
-		InfoLog:  infoLog,
-		ErrorLog: errorLog,
-		Forum:    &sqlite.ForumModel{DB: db},
+		InfoLog:       infoLog,
+		ErrorLog:      errorLog,
+		Snippet:       &sqlite.SnippetModel{DB: db},
+		TemplateCache: templateCache,
 	}
 
 	srv := &http.Server{

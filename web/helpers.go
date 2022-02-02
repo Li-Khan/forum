@@ -29,3 +29,16 @@ func (app *Application) badRequest(w http.ResponseWriter) {
 func (app *Application) methodNotAllowed(w http.ResponseWriter) {
 	app.clientError(w, http.StatusMethodNotAllowed)
 }
+
+func (app *Application) render(w http.ResponseWriter, r *http.Request, name string, td *templateData) {
+	ts, ok := app.TemplateCache[name]
+	if !ok {
+		app.serverError(w, fmt.Errorf("template %s does not exist!", name))
+		return
+	}
+
+	err := ts.Execute(w, td)
+	if err != nil {
+		app.serverError(w, err)
+	}
+}

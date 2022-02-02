@@ -2,7 +2,6 @@ package web
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 )
@@ -20,49 +19,14 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/home.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-		return
-	}
-
-	err = ts.Execute(w, nil)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-	}
+	app.render(w, r, "home.page.html", &templateData{})
 }
 
 func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"./ui/html/signup.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-		return
-	}
-
 	switch r.Method {
 	case http.MethodGet:
 		// Обработка страницы
-		err = ts.Execute(w, nil)
-		if err != nil {
-			app.ErrorLog.Println(err.Error())
-			app.serverError(w, err)
-			return
-		}
+		app.render(w, r, "signup.page.html", &templateData{})
 	case http.MethodPost:
 		// Получение данных
 		login := r.FormValue("login")
@@ -84,28 +48,10 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"./ui/html/signin.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-		return
-	}
-
 	switch r.Method {
 	case http.MethodGet:
 		// Обработка страницы
-		err = ts.Execute(w, nil)
-		if err != nil {
-			app.ErrorLog.Println(err.Error())
-			app.serverError(w, err)
-			return
-		}
+		app.render(w, r, "signin.page.html", &templateData{})
 	case http.MethodPost:
 		// Получение данных
 		login := r.FormValue("login")
@@ -147,49 +93,14 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/profile.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-		return
-	}
-
-	err = ts.Execute(w, nil)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-	}
+	app.render(w, r, "profile.page.html", &templateData{})
 }
 
 func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"./ui/html/create.post.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.ErrorLog.Println(err.Error())
-		app.serverError(w, err)
-		return
-	}
-
 	switch r.Method {
 	case http.MethodGet:
 		// Обработка страницы
-		err = ts.Execute(w, nil)
-		if err != nil {
-			app.ErrorLog.Println(err.Error())
-			app.serverError(w, err)
-			return
-		}
+		app.render(w, r, "create.post.page.html", &templateData{})
 	case http.MethodPost:
 		// Получение данных
 		title := r.FormValue("title")

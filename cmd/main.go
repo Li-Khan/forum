@@ -31,13 +31,14 @@ func main() {
 		return
 	}
 
-	// Инициализирую новый кэш шаблна...
+	// Инициализирую кэш шаблонов
 	templateCache, err := web.NewTemplateCache("./ui/html/")
 	if err != nil {
 		errorLog.Println(err)
 		return
 	}
 
+	// Зависимости всего веб приложения.
 	app := web.Application{
 		InfoLog:       infoLog,
 		ErrorLog:      errorLog,

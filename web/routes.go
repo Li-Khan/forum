@@ -13,7 +13,7 @@ func (app *Application) Routes() *http.ServeMux {
 	mux.HandleFunc("/user/", userRedirect)
 	mux.HandleFunc("/user/signin", app.signin)
 	mux.HandleFunc("/user/signup", app.signup)
-	mux.HandleFunc("/user/logout", app.signout)
+	mux.HandleFunc("/user/signout", app.signout)
 	mux.HandleFunc("/user/profile", app.profile)
 
 	// create handlers

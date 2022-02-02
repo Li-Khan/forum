@@ -33,7 +33,7 @@ func (app *Application) methodNotAllowed(w http.ResponseWriter) {
 func (app *Application) render(w http.ResponseWriter, r *http.Request, name string, td *templateData) {
 	ts, ok := app.TemplateCache[name]
 	if !ok {
-		app.serverError(w, fmt.Errorf("template %s does not exist!", name))
+		app.serverError(w, fmt.Errorf("template %s does not exist", name))
 		return
 	}
 

@@ -10,7 +10,7 @@ type templateData struct {
 	// User *models.User
 }
 
-// NewTemplateCache
+// NewTemplateCache - initializes the template cache
 func NewTemplateCache(dir string) (map[string]*template.Template, error) {
 	// Инициализирую новую карту, которая будет хранить кэш.
 	cache := map[string]*template.Template{}

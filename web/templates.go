@@ -3,11 +3,13 @@ package web
 import (
 	"html/template"
 	"path/filepath"
+
+	"github.com/Li-Khan/forum/pkg/models"
 )
 
 // templateData ...
 type templateData struct {
-	// User *models.User
+	User *models.User
 }
 
 // NewTemplateCache - initializes the template cache

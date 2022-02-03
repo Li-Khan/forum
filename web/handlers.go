@@ -4,7 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/Li-Khan/forum/pkg/models"
 )
+
+// FORMAT - time format
+const FORMAT string = "01-02-2006 15:04:05"
 
 // home - main page handler
 func (app *Application) home(w http.ResponseWriter, r *http.Request) {
@@ -23,21 +29,35 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
+	if isSession(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		// Обработка страницы
 		app.render(w, r, "signup.page.html", &templateData{})
 	case http.MethodPost:
 		// Получение данных
-		login := r.FormValue("login")
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-		confirm := r.FormValue("confirm")
-		fmt.Println(login, email, password, confirm)
+		time := time.Now().Format(FORMAT)
+		user := &models.User{
+			Login:           r.FormValue("login"),
+			Email:           r.FormValue("email"),
+			Password:        r.FormValue("password"),
+			ConfirmPassword: r.FormValue("confirm"),
+			Created:         time,
+		}
 
+		// data := &templateData{User: user}
+		fmt.Println(user)
+		// app.Snippet.InsertUser(user)
 		// Обработка данных
 
 		// Добавление данных в бд
+
+		// Создание куки
+		addCookie(w, r, user.Login)
 
 		// Перенаправление
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -48,15 +68,23 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
+	if isSession(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		// Обработка страницы
 		app.render(w, r, "signin.page.html", &templateData{})
 	case http.MethodPost:
 		// Получение данных
-		login := r.FormValue("login")
-		password := r.FormValue("password")
-		fmt.Println(login, password)
+		user := models.User{
+			Login:    r.FormValue("login"),
+			Password: r.FormValue("password"),
+		}
+		fmt.Println(user)
+		addCookie(w, r, user.Login)
 
 		// Обработка данных
 
@@ -76,7 +104,13 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 		app.methodNotAllowed(w)
 		return
 	}
-	// Обработка выхода
+
+	if !isSession(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	deleteCookie(w, r)
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -97,6 +131,10 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
+	if !isSession(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		// Обработка страницы
@@ -123,6 +161,11 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
+	}
+
+	if !isSession(r) {
+		// Если пользователь не в сессии
+		// обработать это ...
 	}
 
 	// получение данных

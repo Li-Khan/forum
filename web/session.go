@@ -21,7 +21,7 @@ var cookie = session{
 }
 
 func addCookie(w http.ResponseWriter, r *http.Request, login string) error {
-	c, err := r.Cookie("session")
+	c, err := r.Cookie(cookieName)
 	if err != nil {
 		u := uuid.NewV4()
 

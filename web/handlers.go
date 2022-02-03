@@ -132,7 +132,8 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 
 func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 	if !isSession(r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
 	}
 
 	switch r.Method {
@@ -159,7 +160,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
 		return
 	}
 

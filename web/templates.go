@@ -17,7 +17,7 @@ func NewTemplateCache(dir string) (map[string]*template.Template, error) {
 	// Инициализирую новую карту, которая будет хранить кэш.
 	cache := map[string]*template.Template{}
 
-	// filepath.Glob - получает срез всех файловых путей с расширение "page.html".
+	// filepath.Glob - получает срез всех файловых путей с расширением "page.html".
 	pages, err := filepath.Glob(filepath.Join(dir, "*.page.html"))
 	if err != nil {
 		return nil, err

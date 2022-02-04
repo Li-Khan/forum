@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Li-Khan/forum/pkg/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // FORMAT - time format
@@ -34,14 +35,13 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := &templateData{}
 	switch r.Method {
 	case http.MethodGet:
-		// Обработка страницы
-		app.render(w, r, "signup.page.html", &templateData{})
+		app.render(w, r, "signup.page.html", data)
 	case http.MethodPost:
-		// Получение данных
 		time := time.Now().Format(FORMAT)
-		user := &models.User{
+		data.User = models.User{
 			Login:           r.FormValue("login"),
 			Email:           r.FormValue("email"),
 			Password:        r.FormValue("password"),
@@ -49,19 +49,35 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 			Created:         time,
 		}
 
-		// data := &templateData{User: user}
-		fmt.Println(user)
-		// app.Snippet.InsertUser(user)
-		// Обработка данных
+		if data.User.Password != data.User.ConfirmPassword {
+			data.Errors.IsError = true
+			data.Errors.IsPassNotMatch = true
+		}
 
-		// Добавление данных в бд
+		if data.User.Login == "" || data.User.Email == "" || data.User.Password == "" || data.User.ConfirmPassword == "" {
+			data.Errors.IsError = true
+			data.Errors.IsInvalidForm = true
+		}
 
-		// Создание куки
-		addCookie(w, r, user.Login)
+		hashPass, err := bcrypt.GenerateFromPassword([]byte(data.User.Password), 14)
+		if err != nil {
+			// error handle ...
+		}
 
-		// Перенаправление
+		data.User.Password = string(hashPass)
+		data.User.ID, err = app.Snippet.CreateUser(&data.User)
+
+		if err != nil {
+			// error handle ...
+		}
+
+		if data.Errors.IsError {
+			app.render(w, r, "signup.page.html", data)
+			return
+		}
+
+		addCookie(w, r, data.User.Login)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
 	default:
 		app.methodNotAllowed(w)
 	}
@@ -107,9 +123,24 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 
 	if !isSession(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
-	deleteCookie(w, r)
+	cookie.mx.Lock()
+	defer cookie.mx.Unlock()
+	// r.Cookie - не вернет ошибку потому что перед тем как вызвать deleteCookie
+	// вызывается isSession который уже проверяет его на ошибку
+	c, _ := r.Cookie(cookieName)
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieName,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Unix(0, 0),
+	})
+
+	delete(cookie.mapCookie, c.Value)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

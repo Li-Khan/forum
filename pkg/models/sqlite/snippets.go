@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/Li-Khan/forum/pkg/models"
 )
@@ -13,9 +14,20 @@ type SnippetModel struct {
 
 /* ===== METHODS FOR THE USER ===== */
 
-// InsertUser ...
-func (m *SnippetModel) InsertUser(user *models.User) (int, error) {
-	return 0, nil
+// CreateUser ...
+func (m *SnippetModel) CreateUser(user *models.User) (int64, error) {
+	info, err := m.DB.Exec(`INSERT INTO users(
+		Login,
+		Email,
+		Created,
+		Password
+	) VALUES (?, ?, ?, ?)
+	`, user.Login, user.Email, user.Created, user.Password)
+	if err != nil {
+		return 0, fmt.Errorf("create user: %w", err)
+	}
+
+	return info.LastInsertId()
 }
 
 // GetUser ...
@@ -25,8 +37,8 @@ func (m *SnippetModel) GetUser(id int) (*models.User, error) {
 
 /* ===== METHODS FOR THE POST ===== */
 
-// InsertPost ...
-func (m *SnippetModel) InsertPost(user *models.Post) (int, error) {
+// CreatePost ...
+func (m *SnippetModel) CreatePost(user *models.Post) (int, error) {
 	return 0, nil
 }
 
@@ -37,8 +49,8 @@ func (m *SnippetModel) GetPost(id int) (*models.Post, error) {
 
 /* ===== METHODS FOR THE COMMENT ===== */
 
-// InsertComment ...
-func (m *SnippetModel) InsertComment(user *models.Comment) (int, error) {
+// CreateComment ...
+func (m *SnippetModel) CreateComment(user *models.Comment) (int, error) {
 	return 0, nil
 }
 
@@ -50,7 +62,7 @@ func (m *SnippetModel) GetComment(id int) (*models.Comment, error) {
 /* ===== METHODS FOR THE LIKE ===== */
 
 // InsertLike ...
-func (m *SnippetModel) InsertLike(user *models.Comment) (int, error) {
+func (m *SnippetModel) Like(user *models.Comment) (int, error) {
 	return 0, nil
 }
 

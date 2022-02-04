@@ -7,7 +7,7 @@ var ErrNoRecord = errors.New("models: no suitable entry was found")
 
 // User ...
 type User struct {
-	ID              int    `json:"id"`
+	ID              int64  `json:"id"`
 	Login           string `json:"login"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
@@ -40,4 +40,11 @@ type Like struct {
 	PostID    int  `json:"postId"`
 	IsLike    bool `json:"like"`
 	IsDislike bool `json:"dislike"`
+}
+
+// Errors ...
+type Errors struct {
+	IsError        bool
+	IsPassNotMatch bool
+	IsInvalidForm  bool
 }

@@ -43,24 +43,6 @@ func addCookie(w http.ResponseWriter, r *http.Request, login string) error {
 	return nil
 }
 
-func deleteCookie(w http.ResponseWriter, r *http.Request) {
-	cookie.mx.Lock()
-	defer cookie.mx.Unlock()
-	// r.Cookie - не вернет ошибку потому что перед тем как вызвать deleteCookie
-	// вызывается isSession
-	c, _ := r.Cookie(cookieName)
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     cookieName,
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Expires:  time.Unix(0, 0),
-	})
-
-	delete(cookie.mapCookie, c.Value)
-}
-
 func isSession(r *http.Request) bool {
 	c, err := r.Cookie(cookieName)
 	var ok bool

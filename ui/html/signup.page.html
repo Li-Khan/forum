@@ -1,6 +1,6 @@
-{{ template "base" }}
+{{ template "base" . }}
 
-{{define "title"}}Sign up{{end}}
+{{ define "title" }}Sign up{{ end }}
 
 {{ define "main" }}
 <form action="/user/signup" method="POST">
@@ -9,5 +9,6 @@
     <label>Password <input type="password" name="password" placeholder="qwerty1234" required></label>
     <label>Confirm password <input type="password" name="confirm" placeholder="qwerty1234" required></label>
     <input type="submit">
+    {{ template "errors" . }}
 </form>
 {{ end }}

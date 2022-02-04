@@ -33,3 +33,13 @@
 
 </html>
 {{ end }}
+
+{{ define "errors" }}
+{{ if eq .Errors.IsPassNotMatch true }}
+<p class="warning">password does not match</p>
+{{ end }}
+
+{{ if eq .Errors.IsInvalidForm true }}
+<p class="warning">invalid form</p>
+{{ end }}
+{{ end }}

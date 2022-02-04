@@ -9,7 +9,8 @@ import (
 
 // templateData ...
 type templateData struct {
-	User *models.User
+	User   models.User
+	Errors models.Errors
 }
 
 // NewTemplateCache - initializes the template cache
@@ -46,6 +47,5 @@ func NewTemplateCache(dir string) (map[string]*template.Template, error) {
 		// Добавляю полученный набор шаблонов в кэш.
 		cache[name] = ts
 	}
-
 	return cache, nil
 }

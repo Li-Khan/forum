@@ -10,9 +10,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// FORMAT - time format
-const FORMAT string = "01-02-2006 15:04:05"
-const Pass string = "758+}+%s#=?.^$69,"
+const (
+	// FORMAT - time format.
+	FORMAT string = "01-02-2006 15:04:05"
+	// Pass - adds additional characters to the user's password to make the password more complex.
+	Pass string = "758+}+%s#=?.^$69,"
+)
 
 // home - main page handler
 func (app *Application) home(w http.ResponseWriter, r *http.Request) {

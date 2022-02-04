@@ -70,7 +70,7 @@ func (m *SnippetModel) GetComment(id int) (*models.Comment, error) {
 
 /* ===== METHODS FOR THE LIKE ===== */
 
-// InsertLike ...
+// Like ...
 func (m *SnippetModel) Like(user *models.Comment) (int, error) {
 	return 0, nil
 }

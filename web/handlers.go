@@ -12,6 +12,7 @@ import (
 
 // FORMAT - time format
 const FORMAT string = "01-02-2006 15:04:05"
+const Pass string = "758+}+%s#=?.^$69,"
 
 // home - main page handler
 func (app *Application) home(w http.ResponseWriter, r *http.Request) {
@@ -36,11 +37,13 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &templateData{}
+
 	switch r.Method {
 	case http.MethodGet:
 		app.render(w, r, "signup.page.html", data)
 	case http.MethodPost:
 		time := time.Now().Format(FORMAT)
+
 		data.User = models.User{
 			Login:           r.FormValue("login"),
 			Email:           r.FormValue("email"),
@@ -50,28 +53,29 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if data.User.Password != data.User.ConfirmPassword {
-			data.Errors.IsError = true
 			data.Errors.IsPassNotMatch = true
 		}
 
 		if data.User.Login == "" || data.User.Email == "" || data.User.Password == "" || data.User.ConfirmPassword == "" {
-			data.Errors.IsError = true
 			data.Errors.IsInvalidForm = true
 		}
 
+		data.User.Password = fmt.Sprintf(Pass, data.User.Password)
+
 		hashPass, err := bcrypt.GenerateFromPassword([]byte(data.User.Password), 14)
 		if err != nil {
-			// error handle ...
+			app.serverError(w, err)
+			return
 		}
 
 		data.User.Password = string(hashPass)
 		data.User.ID, err = app.Snippet.CreateUser(&data.User)
 
 		if err != nil {
-			// error handle ...
+			data.Errors.IsAlreadyExist = true
 		}
 
-		if data.Errors.IsError {
+		if (templateData{}.Errors) != data.Errors {
 			app.render(w, r, "signup.page.html", data)
 			return
 		}
@@ -89,24 +93,31 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := &templateData{}
+
 	switch r.Method {
 	case http.MethodGet:
-		// Обработка страницы
-		app.render(w, r, "signin.page.html", &templateData{})
+		app.render(w, r, "signin.page.html", data)
 	case http.MethodPost:
-		// Получение данных
-		user := models.User{
-			Login:    r.FormValue("login"),
-			Password: r.FormValue("password"),
+		login := r.FormValue("login")
+		password := fmt.Sprintf(Pass, r.FormValue("password"))
+
+		user, err := app.Snippet.GetUser(login)
+		if err != nil {
+			data.Errors.IsInvalidLoginOrPassword = true
 		}
-		fmt.Println(user)
+
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+		if err != nil {
+			data.Errors.IsInvalidLoginOrPassword = true
+		}
+
+		if (templateData{}.Errors) != data.Errors {
+			app.render(w, r, "signin.page.html", data)
+			return
+		}
+
 		addCookie(w, r, user.Login)
-
-		// Обработка данных
-
-		// Добавление данных в бд
-
-		// Перенаправление
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	default:

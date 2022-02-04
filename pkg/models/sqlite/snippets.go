@@ -24,15 +24,24 @@ func (m *SnippetModel) CreateUser(user *models.User) (int64, error) {
 	) VALUES (?, ?, ?, ?)
 	`, user.Login, user.Email, user.Created, user.Password)
 	if err != nil {
-		return 0, fmt.Errorf("create user: %w", err)
+		return 0, err
 	}
 
 	return info.LastInsertId()
 }
 
 // GetUser ...
-func (m *SnippetModel) GetUser(id int) (*models.User, error) {
-	return nil, nil
+func (m *SnippetModel) GetUser(login string) (*models.User, error) {
+	row := m.DB.QueryRow("SELECT * FROM users WHERE Login = ?", login)
+
+	user := models.User{}
+	err := row.Scan(&user.ID, &user.Login, &user.Email, &user.Created, &user.Password)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 /* ===== METHODS FOR THE POST ===== */

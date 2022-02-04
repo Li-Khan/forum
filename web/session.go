@@ -21,24 +21,22 @@ var cookie = session{
 }
 
 func addCookie(w http.ResponseWriter, r *http.Request, login string) error {
-	c, err := r.Cookie(cookieName)
-	if err != nil {
-		u := uuid.NewV4()
+	u := uuid.NewV4()
 
-		cookie.mx.Lock()
-		cookie.mapCookie[u.String()] = login
-		cookie.mx.Unlock()
+	cookie.mx.Lock()
+	cookie.mapCookie[u.String()] = login
+	cookie.mx.Unlock()
 
-		expire := time.Now().AddDate(0, 0, 1)
-		c = &http.Cookie{
-			Name:     cookieName,
-			Value:    u.String(),
-			Path:     "/",
-			HttpOnly: true,
-			Expires:  expire,
-		}
-		http.SetCookie(w, c)
+	expire := time.Now().AddDate(0, 0, 1)
+	c := &http.Cookie{
+		Name:     cookieName,
+		Value:    u.String(),
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  expire,
 	}
+	http.SetCookie(w, c)
+
 	fmt.Println(cookie.mapCookie)
 	return nil
 }

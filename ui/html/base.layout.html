@@ -42,4 +42,13 @@
 {{ if eq .Errors.IsInvalidForm true }}
 <p class="warning">invalid form</p>
 {{ end }}
+
+{{ if eq .Errors.IsInvalidLoginOrPassword true }}
+<p class="warning">invalid username or password</p>
+{{end}}
+
+{{ if eq .Errors.IsAlreadyExist true }}
+<p class="warning">login or email already exists</p>
+{{ end }}
+
 {{ end }}

@@ -44,7 +44,8 @@ type Like struct {
 
 // Errors ...
 type Errors struct {
-	IsError        bool
-	IsPassNotMatch bool
-	IsInvalidForm  bool
+	IsPassNotMatch           bool
+	IsInvalidForm            bool
+	IsInvalidLoginOrPassword bool
+	IsAlreadyExist           bool
 }

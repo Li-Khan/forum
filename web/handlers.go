@@ -3,6 +3,8 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"net/mail"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -55,6 +57,20 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 			Created:         time,
 		}
 
+		// Valid characters for the login
+		loginConvention := "^[a-zA-Z0-9]*[-]?[a-zA-Z0-9]*$"
+		// Valid characters for the email
+		emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+
+		if re, _ := regexp.Compile(loginConvention); !re.MatchString(data.User.Login) {
+			data.Errors.IsInvalidLogin = true
+		}
+
+		_, err := mail.ParseAddress(data.User.Email)
+		if !emailRegex.MatchString(data.User.Email) || err != nil {
+			data.Errors.IsInvalidEmail = true
+		}
+
 		if data.User.Password != data.User.ConfirmPassword {
 			data.Errors.IsPassNotMatch = true
 		}
@@ -72,10 +88,12 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		data.User.Password = string(hashPass)
-		data.User.ID, err = app.Snippet.CreateUser(&data.User)
 
-		if err != nil {
-			data.Errors.IsAlreadyExist = true
+		if (templateData{}.Errors) == data.Errors {
+			data.User.ID, err = app.Snippet.CreateUser(&data.User)
+			if err != nil {
+				data.Errors.IsAlreadyExist = true
+			}
 		}
 
 		if (templateData{}.Errors) != data.Errors {
@@ -205,13 +223,13 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	if !isSession(r) {
-		// Если пользователь не в сессии
-		// обработать это ...
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
 	}
 
 	// получение данных

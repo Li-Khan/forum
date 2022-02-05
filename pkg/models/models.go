@@ -17,8 +17,8 @@ type User struct {
 
 // Post ...
 type Post struct {
-	ID      int    `json:"id"`
-	UserID  int    `json:"userId"`
+	ID      int64  `json:"id"`
+	UserID  int64  `json:"userId"`
 	Title   string `json:"title"`
 	Text    string `json:"text"`
 	Created string `json:"created"`
@@ -26,20 +26,20 @@ type Post struct {
 
 // Comment ...
 type Comment struct {
-	ID      int    `json:"id"`
-	PostID  int    `json:"postId"`
-	UserID  int    `json:"userId"`
+	ID      int64  `json:"id"`
+	PostID  int64  `json:"postId"`
+	UserID  int64  `json:"userId"`
 	Text    string `json:"text"`
 	Created string `json:"created"`
 }
 
 // Like ...
 type Like struct {
-	ID        int  `json:"id"`
-	UserID    int  `json:"userId"`
-	PostID    int  `json:"postId"`
-	IsLike    bool `json:"like"`
-	IsDislike bool `json:"dislike"`
+	ID        int64 `json:"id"`
+	UserID    int64 `json:"userId"`
+	PostID    int64 `json:"postId"`
+	IsLike    bool  `json:"like"`
+	IsDislike bool  `json:"dislike"`
 }
 
 // Errors ...
@@ -48,4 +48,6 @@ type Errors struct {
 	IsInvalidForm            bool
 	IsInvalidLoginOrPassword bool
 	IsAlreadyExist           bool
+	IsInvalidLogin           bool
+	IsInvalidEmail           bool
 }

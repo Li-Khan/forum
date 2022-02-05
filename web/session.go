@@ -10,7 +10,8 @@ import (
 )
 
 type session struct {
-	mx        sync.Mutex
+	mx sync.Mutex
+	// key - uuid	| value - login
 	mapCookie map[string]string
 }
 

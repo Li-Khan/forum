@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/Li-Khan/forum/pkg/models"
 )
@@ -37,7 +36,6 @@ func (m *SnippetModel) GetUser(login string) (*models.User, error) {
 	user := models.User{}
 	err := row.Scan(&user.ID, &user.Login, &user.Email, &user.Created, &user.Password)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 

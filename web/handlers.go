@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/mail"
 	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/Li-Khan/forum/pkg/models"
@@ -88,7 +87,6 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		data.User.Password = string(hashPass)
-
 		if (templateData{}.Errors) == data.Errors {
 			data.User.ID, err = app.Snippet.CreateUser(&data.User)
 			if err != nil {
@@ -158,8 +156,6 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie.mx.Lock()
-	defer cookie.mx.Unlock()
 	// r.Cookie - не вернет ошибку потому что перед тем как вызвать deleteCookie
 	// вызывается isSession который уже проверяет его на ошибку
 	c, _ := r.Cookie(cookieName)
@@ -172,6 +168,8 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Unix(0, 0),
 	})
 
+	cookie.mx.Lock()
+	defer cookie.mx.Unlock()
 	delete(cookie.mapCookie, c.Value)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -184,13 +182,26 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || id < 1 {
+	login := r.URL.Query().Get("login")
+	if !isSession(r) && login == "" {
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
+	}
+
+	if isSession(r) && login == "" {
+		c, _ := r.Cookie(cookieName)
+		login = cookie.mapCookie[c.Value]
+		http.Redirect(w, r, "/user/profile?login="+login, http.StatusSeeOther)
+		return
+	}
+
+	user, err := app.Snippet.GetUser(login)
+	if err != nil {
 		app.notFound(w)
 		return
 	}
 
-	app.render(w, r, "profile.page.html", &templateData{})
+	app.render(w, r, "profile.page.html", &templateData{User: *user})
 }
 
 func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {

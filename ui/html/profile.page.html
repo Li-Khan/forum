@@ -1,10 +1,10 @@
-{{ template "base" }}
+{{ template "base" . }}
 
 {{ define "title" }}Sign up{{ end }}
 
 {{ define "main" }}
-<p><strong>Login:</strong> Li-Khan</p>
-<p><strong>Email:</strong> li-khan@gavgav.com</p>
-<p><strong>Created:</strong> 1-02-2022</p>
-<p><strong>Posts:</strong> 12</p>
+<p><strong>Login:</strong> {{ .User.Login }}</p>
+<p><strong>Email:</strong> {{ .User.Email }}</p>
+<p><strong>Created:</strong> {{ .User.Created }}</p>
+<p><strong>Posts:</strong> тут пока ничево:) </p>
 {{ end }}

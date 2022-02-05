@@ -9,8 +9,11 @@ import (
 
 // templateData ...
 type templateData struct {
-	User   models.User
-	Errors models.Errors
+	User      models.User
+	Post      models.Post
+	Posts     []models.Post
+	Errors    models.Errors
+	IsSession bool
 }
 
 // NewTemplateCache - initializes the template cache

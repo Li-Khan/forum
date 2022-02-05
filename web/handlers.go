@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/mail"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/Li-Khan/forum/pkg/models"
@@ -31,7 +32,19 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, "home.page.html", &templateData{})
+	data := &templateData{}
+
+	posts, err := app.Snippet.GetAllPosts()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data.Posts = *posts
+
+	if isSession(r) {
+		data.IsSession = true
+	}
+	app.render(w, r, "home.page.html", data)
 }
 
 func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
@@ -122,13 +135,14 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		password := fmt.Sprintf(Pass, r.FormValue("password"))
 
 		user, err := app.Snippet.GetUser(login)
-		if err != nil {
-			data.Errors.IsInvalidLoginOrPassword = true
-		}
 
-		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
 			data.Errors.IsInvalidLoginOrPassword = true
+		} else {
+			err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+			if err != nil {
+				data.Errors.IsInvalidLoginOrPassword = true
+			}
 		}
 
 		if (templateData{}.Errors) != data.Errors {
@@ -210,21 +224,58 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := &templateData{}
+
 	switch r.Method {
 	case http.MethodGet:
-		// Обработка страницы
-		app.render(w, r, "create.post.page.html", &templateData{})
+		app.render(w, r, "create.post.page.html", data)
 	case http.MethodPost:
-		// Получение данных
-		title := r.FormValue("title")
-		text := r.FormValue("text")
-		fmt.Println(title, text)
+		time := time.Now().Format(FORMAT)
 
-		// Обработка данных
+		data.Post = models.Post{
+			Title:   r.FormValue("title"),
+			Text:    r.FormValue("text"),
+			Tags:    strings.Split(r.FormValue("tags"), " "),
+			Created: time,
+		}
 
-		// Добавление данных в бд
+		c, _ := r.Cookie(cookieName)
+		login := cookie.mapCookie[c.Value]
+		user, err := app.Snippet.GetUser(login)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 
-		// Перенаправление
+		if data.Post.Text == "" || data.Post.Title == "" || len(data.Post.Tags) == 1 {
+			data.Errors.IsInvalidForm = true
+		} else {
+			data.Post.UserID = user.ID
+			data.Post.UserLogin = login
+
+			postId, err := app.Snippet.CreatePost(&data.Post)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+			err = app.Snippet.CreateTags(data.Post.Tags)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+
+			err = app.Snippet.CreatePostsAndTags(postId, data.Post.Tags)
+			if err != nil {
+				fmt.Println(err)
+			}
+			// fmt.Println(tagId)
+		}
+
+		if data.Errors.IsInvalidForm {
+			app.render(w, r, "create.post.page.html", data)
+			return
+		}
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	default:
@@ -243,12 +294,5 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// получение данных
-
-	// обработка данных
-
-	// добавление данных в бд
-
-	// перенаправление
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

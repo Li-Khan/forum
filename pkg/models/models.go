@@ -17,11 +17,13 @@ type User struct {
 
 // Post ...
 type Post struct {
-	ID      int64  `json:"id"`
-	UserID  int64  `json:"userId"`
-	Title   string `json:"title"`
-	Text    string `json:"text"`
-	Created string `json:"created"`
+	ID        int64  `json:"id"`
+	UserID    int64  `json:"userId"`
+	UserLogin string `json:"userLogin"`
+	Title     string `json:"title"`
+	Text      string `json:"text"`
+	Tags      []string
+	Created   string `json:"created"`
 }
 
 // Comment ...

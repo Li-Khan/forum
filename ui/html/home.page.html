@@ -1,11 +1,26 @@
-{{ template "base" }}
+{{ template "base" . }}
 
 {{define "title"}}Main page{{end}}
 
 {{ define "main" }}
-<h2>Posts:</h2>
-<p>There are no posts yet</p>
+
+{{ if eq .IsSession false }}
 <a href="/user/signup">Sign Up</a>
 <a href="/user/signin">Sign In</a>
+{{ else  }}
 <a href="/user/signout">Sign out</a>
+<a href="/user/profile?login={{ .User.Login }}">Profile</a>
+{{ end }}
+
+<h2>Posts:</h2>
+{{ range .Posts }}
+<hr>
+<p>Title: {{ .Title }}</p>
+<p>Text: {{ .Text }}</p>
+<!-- тэги это массив -->
+<p>Tags: {{ .Tags }} </p>
+<p>Created: {{ .Created }}</p>
+<p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
+{{ end }}
+
 {{ end }}

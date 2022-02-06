@@ -126,6 +126,7 @@ func (m *SnippetModel) getTagsID(tags []string) ([]int, error) {
 	return tagsID, nil
 }
 
+// CreatePostsAndTags ...
 func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 	tagsID, err := m.getTagsID(tags)
 	if err != nil {
@@ -140,6 +141,25 @@ func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 	}
 
 	return nil
+}
+
+func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {
+	rows, err := m.DB.Query("SELECT TagID FROM postsAndTags WHERE PostID = ?", postID)
+	if err != nil {
+		return nil, err
+	}
+
+	var tagsID []int64
+	var tagID int64
+	for rows.Next() {
+		err = rows.Scan(&tagID)
+		if err != nil {
+			return nil, err
+		}
+		tagsID = append(tagsID, tagID)
+	}
+
+	return tagsID, nil
 }
 
 /* ===== METHODS FOR THE LIKE ===== */

@@ -134,7 +134,6 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		password := fmt.Sprintf(Pass, r.FormValue("password"))
 
 		user, err := app.Snippet.GetUser(login)
-
 		if err != nil {
 			data.Errors.IsInvalidLoginOrPassword = true
 		} else {
@@ -169,8 +168,6 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// r.Cookie - не вернет ошибку потому что перед тем как вызвать deleteCookie
-	// вызывается isSession который уже проверяет его на ошибку
 	c, _ := r.Cookie(cookieName)
 
 	http.SetCookie(w, &http.Cookie{
@@ -181,9 +178,7 @@ func (app *Application) signout(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Unix(0, 0),
 	})
 
-	cookie.mx.Lock()
-	defer cookie.mx.Unlock()
-	delete(cookie.mapCookie, c.Value)
+	cookie.Delete(c.Value)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -203,7 +198,8 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 
 	if isSession(r) && login == "" {
 		c, _ := r.Cookie(cookieName)
-		login = cookie.mapCookie[c.Value]
+		value, _ := cookie.Load(c.Value)
+		login = fmt.Sprint(value)
 		http.Redirect(w, r, "/user/profile?login="+login, http.StatusSeeOther)
 		return
 	}
@@ -239,7 +235,9 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		c, _ := r.Cookie(cookieName)
-		login := cookie.mapCookie[c.Value]
+		value, _ := cookie.Load(c.Value)
+		login := fmt.Sprint(value)
+
 		user, err := app.Snippet.GetUser(login)
 		if err != nil {
 			app.serverError(w, err)
@@ -252,7 +250,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			data.Post.UserID = user.ID
 			data.Post.UserLogin = login
 
-			postId, err := app.Snippet.CreatePost(&data.Post)
+			postID, err := app.Snippet.CreatePost(&data.Post)
 			if err != nil {
 				app.serverError(w, err)
 				return
@@ -263,7 +261,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			err = app.Snippet.CreatePostsAndTags(postId, data.Post.Tags)
+			err = app.Snippet.CreatePostsAndTags(postID, data.Post.Tags)
 			if err != nil {
 				fmt.Println(err)
 			}

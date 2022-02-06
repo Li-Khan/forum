@@ -9,24 +9,16 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type session struct {
-	mx sync.Mutex
-	// key - uuid	| value - login
-	mapCookie map[string]string
-}
-
 const cookieName string = "Forum"
 
-var cookie = session{
-	mapCookie: make(map[string]string),
-}
+var cookie sync.Map
 
-func addCookie(w http.ResponseWriter, r *http.Request, login string) error {
+func addCookie(w http.ResponseWriter, r *http.Request, login string) {
 	u := uuid.NewV4()
 
-	cookie.mx.Lock()
-	cookie.mapCookie[u.String()] = login
-	cookie.mx.Unlock()
+	oneUser(login, u.String())
+
+	cookie.Store(u.String(), login)
 
 	expire := time.Now().AddDate(0, 0, 1)
 	c := &http.Cookie{
@@ -38,15 +30,28 @@ func addCookie(w http.ResponseWriter, r *http.Request, login string) error {
 	}
 	http.SetCookie(w, c)
 
-	fmt.Println(cookie.mapCookie)
-	return nil
+	// не забыть удалить все что ниже
+	cookie.Range(func(key, value interface{}) bool {
+		fmt.Printf("key = %v\tvalue - %v", key, value)
+		return true
+	})
+	fmt.Println()
 }
 
 func isSession(r *http.Request) bool {
 	c, err := r.Cookie(cookieName)
 	var ok bool
 	if err == nil {
-		_, ok = cookie.mapCookie[c.Value]
+		_, ok = cookie.Load(c.Value)
 	}
 	return ok
+}
+
+func oneUser(login, uuid string) {
+	cookie.Range(func(key, value interface{}) bool {
+		if login == fmt.Sprint(value) {
+			cookie.Delete(key)
+		}
+		return true
+	})
 }

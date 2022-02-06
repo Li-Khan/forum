@@ -41,9 +41,8 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Posts = *posts
 
-	if isSession(r) {
-		data.IsSession = true
-	}
+	data.IsSession = isSession(r)
+
 	app.render(w, r, "home.page.html", data)
 }
 

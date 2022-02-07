@@ -19,7 +19,12 @@
 <p>Title: {{ .Title }}</p>
 <p>Text: {{ .Text }}</p>
 <!-- тэги это массив -->
-<p>Tags: {{ .Tags }} </p>
+<p>
+    Tags:
+    {{ range .Tags }}
+    <a href="/post?tag={{ . }}">{{ . }}</a>
+    {{ end }}
+</p>
 <p>Created: {{ .Created }}</p>
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
 {{ end }}

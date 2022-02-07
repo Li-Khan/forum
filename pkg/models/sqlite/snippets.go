@@ -61,11 +61,12 @@ func (m *SnippetModel) CreatePost(post *models.Post) (int64, error) {
 	return result.LastInsertId()
 }
 
-// GetPost ...
+// GetPostById ...
 func (m *SnippetModel) GetPostById(id int) (*models.Post, error) {
 	return nil, nil
 }
 
+// GetAllPosts ...
 func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 	rows, err := m.DB.Query(`SELECT * FROM posts ORDER BY Created DESC`)
 	if err != nil {
@@ -82,7 +83,21 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 			log.Println(err)
 			continue
 		}
+
+		tagsID, err := m.getTagIDbyPostID(post.ID)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		tags, err := m.getTagsByTagID(tagsID)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		post.Tags = append(post.Tags, tags...)
 		posts = append(posts, post)
+		post.Tags = nil
 	}
 
 	return &posts, nil
@@ -160,6 +175,20 @@ func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {
 	}
 
 	return tagsID, nil
+}
+
+func (m *SnippetModel) getTagsByTagID(tagsID []int64) ([]string, error) {
+	tags := []string{}
+	var tag string
+	for _, tagID := range tagsID {
+		row := m.DB.QueryRow("SELECT Tag FROM tags WHERE ID = ?", tagID)
+		err := row.Scan(&tag)
+		if err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+	return tags, nil
 }
 
 /* ===== METHODS FOR THE LIKE ===== */

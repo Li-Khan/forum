@@ -33,7 +33,7 @@
 {{ end }}
 
 <form action="/create/comment?post={{.ID}}" method="POST">
-    <textarea name="text" cols="30" rows="10" placeholder="Comment"></textarea>
+    <textarea name="text" cols="30" rows="10" placeholder="Comment" required></textarea>
 
     <input type="submit">
 </form>

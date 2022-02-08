@@ -16,13 +16,14 @@ type SnippetModel struct {
 
 // CreateUser ...
 func (m *SnippetModel) CreateUser(user *models.User) (int64, error) {
-	result, err := m.DB.Exec(`INSERT INTO users(
-		Login,
-		Email,
-		Created,
-		Password
-	) VALUES (?, ?, ?, ?)
-	`, user.Login, user.Email, user.Created, user.Password)
+	stmt := `INSERT INTO "main"."users"(
+		"Login",
+		"Email",
+		"Created",
+		"Password"
+	) VALUES (?, ?, ?, ?)`
+
+	result, err := m.DB.Exec(stmt, user.Login, user.Email, user.Created, user.Password)
 	if err != nil {
 		return 0, err
 	}
@@ -32,7 +33,9 @@ func (m *SnippetModel) CreateUser(user *models.User) (int64, error) {
 
 // GetUser ...
 func (m *SnippetModel) GetUser(login string) (*models.User, error) {
-	row := m.DB.QueryRow("SELECT * FROM users WHERE Login = ?", login)
+	stmt := `SELECT * FROM "main"."users" WHERE "Login" = ?`
+
+	row := m.DB.QueryRow(stmt, login)
 
 	user := models.User{}
 	err := row.Scan(&user.ID, &user.Login, &user.Email, &user.Created, &user.Password)
@@ -47,13 +50,10 @@ func (m *SnippetModel) GetUser(login string) (*models.User, error) {
 
 // CreatePost ...
 func (m *SnippetModel) CreatePost(post *models.Post) (int64, error) {
-	result, err := m.DB.Exec(`INSERT INTO posts (
-		UserID,
-		UserLogin,
-		Title,
-		Text,
-		Created
-	) VALUES (?, ?, ?, ?, ?)`, post.UserID, post.UserLogin, post.Title, post.Text, post.Created)
+	stmt := `INSERT INTO "main"."posts"
+	("UserID", "UserLogin", "Title", "Text", "Created")
+	VALUES (?, ?, ?, ?, ?);`
+	result, err := m.DB.Exec(stmt, post.UserID, post.UserLogin, post.Title, post.Text, post.Created)
 	if err != nil {
 		return 0, err
 	}
@@ -68,7 +68,8 @@ func (m *SnippetModel) GetPostById(id int) (*models.Post, error) {
 
 // GetAllPosts ...
 func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
-	rows, err := m.DB.Query(`SELECT * FROM posts ORDER BY Created DESC`)
+	stmt := `SELECT * FROM "main"."posts" ORDER BY "Created" DESC`
+	rows, err := m.DB.Query(stmt)
 	if err != nil {
 		return nil, err
 	}
@@ -111,13 +112,10 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 
 // CreateComment ...
 func (m *SnippetModel) CreateComment(comment *models.Comment) error {
-	stmt := `INSERT INTO comments (
-		UserID,
-		PostID,
-		Login,
-		Text, 
-		Created
-	) VALUES (?, ?, ?, ?, ?)`
+	stmt := `INSERT INTO "main"."comments"
+	("UserID", "PostID", "Login", "Text", "Created")
+	VALUES (?, ?, ?, ?, ?);`
+
 	_, err := m.DB.Exec(stmt, comment.UserID, comment.PostID, comment.Login, comment.Text, comment.Created)
 	if err != nil {
 		return err
@@ -127,7 +125,7 @@ func (m *SnippetModel) CreateComment(comment *models.Comment) error {
 
 // GetPostComments ...
 func (m *SnippetModel) getPostComments(postID int64) ([]models.Comment, error) {
-	stmt := "SELECT * FROM comments WHERE PostID = ? ORDER BY Created DESC"
+	stmt := `SELECT * FROM "main"."comments" WHERE "PostID" = ? ORDER BY "Created" DESC`
 
 	rows, err := m.DB.Query(stmt, postID)
 	if err != nil {
@@ -154,8 +152,10 @@ func (m *SnippetModel) getPostComments(postID int64) ([]models.Comment, error) {
 
 // CreateTags ...
 func (m *SnippetModel) CreateTags(tags []string) error {
+	stmt := `INSERT INTO "main"."tags" (Tag) VALUES (?)`
+
 	for _, tag := range tags {
-		_, err := m.DB.Exec(`INSERT INTO tags (Tag) VALUES (?)`, tag)
+		_, err := m.DB.Exec(stmt, tag)
 		if err != nil {
 			continue
 		}
@@ -164,10 +164,12 @@ func (m *SnippetModel) CreateTags(tags []string) error {
 }
 
 func (m *SnippetModel) getTagsID(tags []string) ([]int, error) {
+	stmt := `SELECT "ID" FROM "main"."tags" WHERE "Tag" = ?`
+
 	tagsID := []int{}
 	var id int
 	for _, tag := range tags {
-		row := m.DB.QueryRow("SELECT ID FROM tags WHERE Tag = ?", tag)
+		row := m.DB.QueryRow(stmt, tag)
 		err := row.Scan(&id)
 		if err != nil {
 			return nil, err
@@ -184,8 +186,12 @@ func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 		return err
 	}
 
+	stmt := `INSERT INTO "main"."postsAndTags"
+	("PostID", "TagID")
+	VALUES (?, ?);`
+
 	for _, tagID := range tagsID {
-		_, err := m.DB.Exec("INSERT INTO postsAndTags (PostID, TagID) VALUES(?, ?)", postId, tagID)
+		_, err := m.DB.Exec(stmt, postId, tagID)
 		if err != nil {
 			return err
 		}
@@ -195,7 +201,9 @@ func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 }
 
 func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {
-	rows, err := m.DB.Query("SELECT TagID FROM postsAndTags WHERE PostID = ?", postID)
+	stmt := `SELECT "TagID" FROM "main"."postsAndTags" WHERE "PostID" = ?`
+
+	rows, err := m.DB.Query(stmt, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -214,10 +222,12 @@ func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {
 }
 
 func (m *SnippetModel) getTagsByTagID(tagsID []int64) ([]string, error) {
+	stmt := `SELECT "Tag" FROM "main"."tags" WHERE "ID" = ?`
+
 	tags := []string{}
 	var tag string
 	for _, tagID := range tagsID {
-		row := m.DB.QueryRow("SELECT Tag FROM tags WHERE ID = ?", tagID)
+		row := m.DB.QueryRow(stmt, tagID)
 		err := row.Scan(&tag)
 		if err != nil {
 			return nil, err

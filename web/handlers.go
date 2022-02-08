@@ -322,6 +322,11 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		Created: time,
 	}
 
+	if comment.Text == "" {
+		app.badRequest(w)
+		return
+	}
+
 	err = app.Snippet.CreateComment(comment)
 	if err != nil {
 		app.serverError(w, err)

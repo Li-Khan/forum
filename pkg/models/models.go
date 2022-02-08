@@ -23,6 +23,7 @@ type Post struct {
 	Title     string `json:"title"`
 	Text      string `json:"text"`
 	Tags      []string
+	Comments  []Comment
 	Created   string `json:"created"`
 }
 
@@ -31,6 +32,7 @@ type Comment struct {
 	ID      int64  `json:"id"`
 	PostID  int64  `json:"postId"`
 	UserID  int64  `json:"userId"`
+	Login   string `json:"login"`
 	Text    string `json:"text"`
 	Created string `json:"created"`
 }

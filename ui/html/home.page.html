@@ -26,6 +26,18 @@
     {{ end }}
 </p>
 <p>Created: {{ .Created }}</p>
+
+<p>Comments:</p>
+{{ range .Comments }}
+<p>{{ . }}</p>
+{{ end }}
+
+<form action="/create/comment?post={{.ID}}" method="POST">
+    <textarea name="text" cols="30" rows="10" placeholder="Comment"></textarea>
+
+    <input type="submit">
+</form>
+
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
 {{ end }}
 

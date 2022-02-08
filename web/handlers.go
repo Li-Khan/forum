@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/mail"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -244,6 +245,12 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		for _, tag := range data.Post.Tags {
+			if strings.Contains(tag, " ") {
+				data.Errors.IsInvalidForm = true
+			}
+		}
+
 		if data.Post.Text == "" || data.Post.Title == "" || len(data.Post.Tags) == 1 {
 			data.Errors.IsInvalidForm = true
 		} else {
@@ -265,7 +272,6 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println(err)
 			}
-			// fmt.Println(tagId)
 		}
 
 		if data.Errors.IsInvalidForm {
@@ -288,6 +294,37 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 
 	if !isSession(r) {
 		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
+	}
+
+	postID, err := strconv.Atoi(r.URL.Query().Get("post"))
+	if err != nil {
+		app.notFound(w)
+		return
+	}
+
+	c, _ := r.Cookie(cookieName)
+	value, _ := cookie.Load(c.Value)
+	login := fmt.Sprint(value)
+
+	user, err := app.Snippet.GetUser(login)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	time := time.Now().Format(FORMAT)
+	comment := &models.Comment{
+		PostID:  int64(postID),
+		UserID:  user.ID,
+		Login:   user.Login,
+		Text:    r.FormValue("text"),
+		Created: time,
+	}
+
+	err = app.Snippet.CreateComment(comment)
+	if err != nil {
+		app.serverError(w, err)
 		return
 	}
 

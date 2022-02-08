@@ -95,7 +95,11 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 			log.Println(err)
 			continue
 		}
+
+		comments, err := m.getPostComments(post.ID)
+
 		post.Tags = append(post.Tags, tags...)
+		post.Comments = comments
 		posts = append(posts, post)
 		post.Tags = nil
 	}
@@ -106,17 +110,49 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 /* ===== METHODS FOR THE COMMENT ===== */
 
 // CreateComment ...
-func (m *SnippetModel) CreateComment(user *models.Comment) (int, error) {
-	return 0, nil
+func (m *SnippetModel) CreateComment(comment *models.Comment) error {
+	stmt := `INSERT INTO comments (
+		UserID,
+		PostID,
+		Login,
+		Text, 
+		Created
+	) VALUES (?, ?, ?, ?, ?)`
+	_, err := m.DB.Exec(stmt, comment.UserID, comment.PostID, comment.Login, comment.Text, comment.Created)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// GetComment ...
-func (m *SnippetModel) GetComment(id int) (*models.Comment, error) {
-	return nil, nil
+// GetPostComments ...
+func (m *SnippetModel) getPostComments(postID int64) ([]models.Comment, error) {
+	stmt := "SELECT * FROM comments WHERE PostID = ? ORDER BY Created DESC"
+
+	rows, err := m.DB.Query(stmt, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comment models.Comment
+	var comments []models.Comment
+
+	for rows.Next() {
+		err := rows.Scan(&comment.ID, &comment.PostID, &comment.UserID, &comment.Login, &comment.Text, &comment.Created)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
 }
 
 /* ===== METHODS FOR THE TAGS ===== */
 
+// CreateTags ...
 func (m *SnippetModel) CreateTags(tags []string) error {
 	for _, tag := range tags {
 		_, err := m.DB.Exec(`INSERT INTO tags (Tag) VALUES (?)`, tag)

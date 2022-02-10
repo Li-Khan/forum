@@ -39,6 +39,16 @@
 </form>
 
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
+
+<div class="like">
+    <form method="GET" action="/post/like">
+        <button name="id" value="{{ .ID }}">Like</button>
+    </form>
+    <form method="GET" action="/post/dislike">
+        <button name="id" value="{{ .ID }}">Dislike</button>
+    </form>
+</div>
+
 {{ end }}
 
 {{ end }}

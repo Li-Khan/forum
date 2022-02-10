@@ -1,9 +1,7 @@
 package models
 
-import "errors"
-
 // ErrNoRecord ...
-var ErrNoRecord = errors.New("models: no suitable entry was found")
+// var ErrNoRecord = errors.New("models: no suitable entry was found")
 
 // User ...
 type User struct {
@@ -39,11 +37,10 @@ type Comment struct {
 
 // Like ...
 type Like struct {
-	ID        int64 `json:"id"`
-	UserID    int64 `json:"userId"`
-	PostID    int64 `json:"postId"`
-	IsLike    bool  `json:"like"`
-	IsDislike bool  `json:"dislike"`
+	ID     int64 `json:"id"`
+	UserID int64 `json:"userId"`
+	PostID int64 `json:"postId"`
+	IsLike bool  `json:"like"`
 }
 
 // Errors ...

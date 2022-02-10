@@ -16,8 +16,8 @@ import (
 const (
 	// FORMAT - time format.
 	FORMAT string = "01-02-2006 15:04:05"
-	// Pass - adds additional characters to the user's password to make the password more complex.
-	Pass string = "758+}+%s#=?.^$69,"
+	// Salt - adds additional characters to the user's password to make the password more complex.
+	Salt string = "758+}+%s#=?.^$69,"
 )
 
 // home - main page handler
@@ -91,7 +91,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 			data.Errors.IsInvalidForm = true
 		}
 
-		data.User.Password = fmt.Sprintf(Pass, data.User.Password)
+		data.User.Password = fmt.Sprintf(Salt, data.User.Password)
 
 		hashPass, err := bcrypt.GenerateFromPassword([]byte(data.User.Password), 14)
 		if err != nil {
@@ -132,7 +132,7 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		app.render(w, r, "signin.page.html", data)
 	case http.MethodPost:
 		login := r.FormValue("login")
-		password := fmt.Sprintf(Pass, r.FormValue("password"))
+		password := fmt.Sprintf(Salt, r.FormValue("password"))
 
 		user, err := app.Snippet.GetUser(login)
 		if err != nil {
@@ -251,7 +251,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if data.Post.Text == "" || data.Post.Title == "" || len(data.Post.Tags) == 1 {
+		if (data.Post.Text == "" || data.Post.Title == "") || (len(data.Post.Tags) == 1 && data.Post.Tags[0] == "") {
 			data.Errors.IsInvalidForm = true
 		} else {
 			data.Post.UserID = user.ID
@@ -333,5 +333,77 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *Application) likePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if !isSession(r) {
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
+	}
+
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		app.badRequest(w)
+		return
+	}
+
+	postID, err := strconv.Atoi(id)
+	if err != nil {
+		app.notFound(w)
+		return
+	}
+
+	c, _ := r.Cookie(cookieName)
+	value, _ := cookie.Load(c.Value)
+	login := fmt.Sprint(value)
+
+	user, err := app.Snippet.GetUser(login)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	like := &models.Like{
+		PostID: int64(postID),
+		UserID: user.ID,
+		IsLike: true,
+	}
+
+	app.Snippet.LikePost(like)
+
+	fmt.Println("like post id ", postID)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *Application) dislikePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if !isSession(r) {
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
+	}
+
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		app.badRequest(w)
+		return
+	}
+
+	postID, err := strconv.Atoi(id)
+	if err != nil {
+		app.notFound(w)
+		return
+	}
+
+	fmt.Println("dislike post id ", postID)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

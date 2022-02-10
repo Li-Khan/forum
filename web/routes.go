@@ -21,6 +21,9 @@ func (app *Application) Routes() *http.ServeMux {
 	mux.HandleFunc("/create/post", app.createPost)
 	mux.HandleFunc("/create/comment", app.createComment)
 
+	mux.HandleFunc("/post/like", app.likePost)
+	mux.HandleFunc("/post/dislike", app.dislikePost)
+
 	fileServer := http.FileServer(neuteredFileSystem{http.Dir("./ui/static")})
 	mux.Handle("/static", http.NotFoundHandler())
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))

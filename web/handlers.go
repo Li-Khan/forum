@@ -1,7 +1,6 @@
 package web
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"net/mail"
@@ -347,7 +346,6 @@ func (app *Application) post(w http.ResponseWriter, r *http.Request) {
 
 	if key, ok := values["tag"]; ok {
 		app.postTag(w, r, key[0])
-		// fmt.Println(key)
 		return
 	}
 
@@ -360,35 +358,54 @@ func (app *Application) postID(w http.ResponseWriter, r *http.Request, key strin
 		return
 	}
 
-	post, err := app.Snippet.GetPostByID(postID)
+	posts, err := app.Snippet.GetAllPosts()
 	if err != nil {
-		if err == sql.ErrNoRows {
-			app.notFound(w)
-			return
-		}
 		app.serverError(w, err)
 		return
 	}
 
-	data := &templateData{
-		Post: *post,
+	data := &templateData{}
+
+	var isFound bool
+	for _, post := range *posts {
+		if post.ID == int64(postID) {
+			isFound = true
+			data = &templateData{Post: post}
+		}
 	}
+
+	if !isFound {
+		app.notFound(w)
+		return
+	}
+
 	app.render(w, r, "post.id.page.html", data)
 }
 
 func (app *Application) postTag(w http.ResponseWriter, r *http.Request, tag string) {
-	posts, err := app.Snippet.GetPostByTag(tag)
+	posts, err := app.Snippet.GetAllPosts()
 	if err != nil {
-		if err == sql.ErrNoRows {
-			app.notFound(w)
-			return
-		}
 		app.serverError(w, err)
 		return
 	}
 
+	tagsPosts := []models.Post{}
+
+	for _, post := range *posts {
+		for _, postTag := range post.Tags {
+			if postTag == tag {
+				tagsPosts = append(tagsPosts, post)
+			}
+		}
+	}
+
+	if len(tagsPosts) == 0 {
+		app.notFound(w)
+		return
+	}
+
 	data := &templateData{
-		Posts: *posts,
+		Posts: tagsPosts,
 	}
 
 	app.render(w, r, "post.tag.page.html", data)

@@ -6,7 +6,9 @@
 
 {{ range .Posts }}
 
-<h3>Title: {{ .Title }}</h3>
+<a href="/post?id={{ .ID }}">
+    <h2>{{ .Title }}</h2>
+</a>
 <p>Text: {{ .Text }}</p>
 
 <p>

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/mail"
@@ -336,74 +337,59 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *Application) likePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+func (app *Application) post(w http.ResponseWriter, r *http.Request) {
+	values := r.URL.Query()
+
+	if key, ok := values["id"]; ok {
+		app.postID(w, r, key[0])
 		return
 	}
 
-	if !isSession(r) {
-		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+	if key, ok := values["tag"]; ok {
+		app.postTag(w, r, key[0])
+		// fmt.Println(key)
 		return
 	}
 
-	id := r.URL.Query().Get("id")
-	if id == "" {
-		app.badRequest(w)
-		return
-	}
+}
 
-	postID, err := strconv.Atoi(id)
+func (app *Application) postID(w http.ResponseWriter, r *http.Request, key string) {
+	postID, err := strconv.Atoi(key)
 	if err != nil {
 		app.notFound(w)
 		return
 	}
 
-	c, _ := r.Cookie(cookieName)
-	value, _ := cookie.Load(c.Value)
-	login := fmt.Sprint(value)
-
-	user, err := app.Snippet.GetUser(login)
+	post, err := app.Snippet.GetPostByID(postID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			app.notFound(w)
+			return
+		}
 		app.serverError(w, err)
 		return
 	}
 
-	like := &models.Like{
-		PostID: int64(postID),
-		UserID: user.ID,
-		IsLike: true,
+	data := &templateData{
+		Post: *post,
 	}
-
-	app.Snippet.LikePost(like)
-
-	fmt.Println("like post id ", postID)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	app.render(w, r, "post.id.page.html", data)
 }
 
-func (app *Application) dislikePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
-	if !isSession(r) {
-		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
-		return
-	}
-
-	id := r.URL.Query().Get("id")
-	if id == "" {
-		app.badRequest(w)
-		return
-	}
-
-	postID, err := strconv.Atoi(id)
+func (app *Application) postTag(w http.ResponseWriter, r *http.Request, tag string) {
+	posts, err := app.Snippet.GetPostByTag(tag)
 	if err != nil {
-		app.notFound(w)
+		if err == sql.ErrNoRows {
+			app.notFound(w)
+			return
+		}
+		app.serverError(w, err)
 		return
 	}
 
-	fmt.Println("dislike post id ", postID)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	data := &templateData{
+		Posts: *posts,
+	}
+
+	app.render(w, r, "post.tag.page.html", data)
 }

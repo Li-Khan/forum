@@ -63,7 +63,87 @@ func (m *SnippetModel) CreatePost(post *models.Post) (int64, error) {
 
 // GetPostByID ...
 func (m *SnippetModel) GetPostByID(id int) (*models.Post, error) {
-	return nil, nil
+	stmt := `SELECT * FROM "main"."posts" WHERE "id" = ?`
+	row := m.DB.QueryRow(stmt, id)
+
+	post := models.Post{}
+	err := row.Scan(&post.ID, &post.UserID, &post.UserLogin, &post.Title, &post.Text, &post.Created)
+	if err != nil {
+		return nil, err
+	}
+
+	comments, err := m.getPostComments(post.ID)
+	post.Comments = comments
+
+	tagsID, err := m.getTagIDbyPostID(post.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	tags, err := m.getTagsByTagID(tagsID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	post.Tags = append(post.Tags, tags...)
+
+	return &post, nil
+}
+
+// GetPostByTag ...
+func (m *SnippetModel) GetPostByTag(tag string) (*[]models.Post, error) {
+	tagsID, err := m.getTagsID([]string{tag})
+	if err != nil {
+		return nil, err
+	}
+
+	postsID, err := m.getPostIDbyTagID(tagsID[0])
+	if err != nil {
+		return nil, err
+	}
+
+	stmt := `SELECT * FROM "main"."posts" WHERE "id" = ?`
+
+	post := models.Post{}
+	posts := []models.Post{}
+
+	for _, postID := range postsID {
+		row := m.DB.QueryRow(stmt, postID)
+		err := row.Scan(&post.ID, &post.UserID, &post.UserLogin, &post.Title, &post.Text, &post.Created)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		tagsID, err := m.getTagIDbyPostID(post.ID)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		tags, err := m.getTagsByTagID(tagsID)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		comments, err := m.getPostComments(post.ID)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		post.Tags = append(post.Tags, tags...)
+		post.Comments = comments
+		posts = append(posts, post)
+		post.Tags = nil
+	}
+
+	for i, j := 0, len(posts)-1; i < j; i, j = i+1, j-1 {
+		posts[i], posts[j] = posts[j], posts[i]
+	}
+
+	return &posts, nil
 }
 
 // GetAllPosts ...
@@ -163,11 +243,11 @@ func (m *SnippetModel) CreateTags(tags []string) error {
 	return nil
 }
 
-func (m *SnippetModel) getTagsID(tags []string) ([]int, error) {
+func (m *SnippetModel) getTagsID(tags []string) ([]int64, error) {
 	stmt := `SELECT "id" FROM "main"."tags" WHERE "tag" = ?`
 
-	tagsID := []int{}
-	var id int
+	tagsID := []int64{}
+	var id int64
 	for _, tag := range tags {
 		row := m.DB.QueryRow(stmt, tag)
 		err := row.Scan(&id)
@@ -198,6 +278,28 @@ func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 	}
 
 	return nil
+}
+
+func (m *SnippetModel) getPostIDbyTagID(id int64) ([]int64, error) {
+	stmt := `SELECT "post_id" FROM "main"."posts_and_tags" WHERE "tag_id" = ?`
+
+	rows, err := m.DB.Query(stmt, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var postsID []int64
+	var postID int64
+
+	for rows.Next() {
+		err = rows.Scan(&postID)
+		if err != nil {
+			return nil, err
+		}
+		postsID = append(postsID, postID)
+	}
+
+	return postsID, nil
 }
 
 func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {

@@ -1,25 +1,12 @@
 {{ template "base" . }}
 
-{{ define "title" }}Main page{{ end }}
+{{ define "title" }}Post page{{ end }}
 
 {{ define "main" }}
 
-{{ if eq .IsSession false }}
-<a href="/user/signup">Sign Up</a>
-<a href="/user/signin">Sign In</a>
-{{ else }}
-<a href="/user/signout">Sign out</a>
-<a href="/user/profile?login={{ .User.Login }}">Profile</a>
-{{ end }}
-<a href="/create/post">create post</a>
-
-<h2>Posts:</h2>
 {{ range .Posts }}
-<hr>
 
-<a href="/post?id={{ .ID }}">
-    <h2>{{ .Title }}</h2>
-</a>
+<h3>Title: {{ .Title }}</h3>
 <p>Text: {{ .Text }}</p>
 
 <p>
@@ -28,6 +15,7 @@
     <a href="/post?tag={{ . }}">{{ . }}</a>
     {{ end }}
 </p>
+
 <p>Created: {{ .Created }}</p>
 
 <p>Comments:</p>

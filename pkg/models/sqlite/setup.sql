@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS "like_post" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"post_id"	INTEGER NOT NULL,
 	"user_id"	INTEGER NOT NULL,
-	"is_like"	TEXT NOT NULL,
+	"is_like"	INTEGER NOT NULL,
 	FOREIGN KEY("post_id") REFERENCES "posts"("id"),
 	FOREIGN KEY("user_id") REFERENCES "users"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)

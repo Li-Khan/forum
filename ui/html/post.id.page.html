@@ -1,0 +1,31 @@
+{{ template "base" . }}
+
+{{ define "title" }}Post page{{ end }}
+
+{{ define "main" }}
+
+<h3>Title: {{ .Post.Title }}</h3>
+<p>Text: {{ .Post.Text }}</p>
+
+<p>
+    Tags:
+    {{ range .Post.Tags }}
+    <a href="/post?tag={{ . }}">{{ . }}</a>
+    {{ end }}
+</p>
+
+<p>Created: {{ .Post.Created }}</p>
+
+<p>Comments:</p>
+{{ range .Post.Comments }}
+<p>{{ . }}</p>
+{{ end }}
+
+<form action="/create/comment?post={{.Post.ID}}" method="POST">
+    <textarea name="text" cols="30" rows="10" placeholder="Comment" required></textarea>
+    <input type="submit">
+</form>
+
+<p>Author: <a href="/user/profile?login={{ .Post.UserLogin }}">{{ .Post.UserLogin }}</a></p>
+
+{{ end }}

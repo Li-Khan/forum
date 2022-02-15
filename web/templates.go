@@ -13,6 +13,7 @@ type templateData struct {
 	Post      models.Post
 	Posts     []models.Post
 	Errors    models.Errors
+	Tags      []string
 	IsSession bool
 }
 

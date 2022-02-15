@@ -13,6 +13,11 @@
 {{ end }}
 <a href="/create/post">create post</a>
 
+<p>Filter:</p>
+{{ range .Tags }}
+<a href="/filter?tag={{ . }}">{{ . }}</a>
+{{ end }}
+
 <h2>Posts:</h2>
 {{ range .Posts }}
 <hr>
@@ -25,7 +30,7 @@
 <p>
     Tags:
     {{ range .Tags }}
-    <a href="/post?tag={{ . }}">{{ . }}</a>
+    <a href="/filter?tag={{ . }}">{{ . }}</a>
     {{ end }}
 </p>
 <p>Created: {{ .Created }}</p>

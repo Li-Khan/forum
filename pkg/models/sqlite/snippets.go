@@ -254,6 +254,28 @@ func (m *SnippetModel) getTagsByTagID(tagsID []int64) ([]string, error) {
 	return tags, nil
 }
 
+// GetAllTags ...
+func (m *SnippetModel) GetAllTags() ([]string, error) {
+	stmt := `SELECT tag FROM tags`
+
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	var tag string
+	var tags []string
+	for rows.Next() {
+		err = rows.Scan(&tag)
+		if err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+
+	return tags, nil
+}
+
 /* ===== METHODS FOR THE LIKE ===== */
 
 // LikePost ...

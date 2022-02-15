@@ -42,6 +42,14 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Posts = *posts
 
+	tags, err := app.Snippet.GetAllTags()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	data.Tags = tags
+
 	data.IsSession = isSession(r)
 
 	app.render(w, r, "home.page.html", data)
@@ -337,21 +345,8 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) post(w http.ResponseWriter, r *http.Request) {
-	values := r.URL.Query()
+	key := r.URL.Query().Get("id")
 
-	if key, ok := values["id"]; ok {
-		app.postID(w, r, key[0])
-		return
-	}
-
-	if key, ok := values["tag"]; ok {
-		app.postTag(w, r, key[0])
-		return
-	}
-
-}
-
-func (app *Application) postID(w http.ResponseWriter, r *http.Request, key string) {
 	postID, err := strconv.Atoi(key)
 	if err != nil {
 		app.notFound(w)
@@ -380,9 +375,12 @@ func (app *Application) postID(w http.ResponseWriter, r *http.Request, key strin
 	}
 
 	app.render(w, r, "post.id.page.html", data)
+
 }
 
-func (app *Application) postTag(w http.ResponseWriter, r *http.Request, tag string) {
+func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
+	tag := r.URL.Query().Get("tag")
+
 	posts, err := app.Snippet.GetAllPosts()
 	if err != nil {
 		app.serverError(w, err)
@@ -408,5 +406,5 @@ func (app *Application) postTag(w http.ResponseWriter, r *http.Request, tag stri
 		Posts: tagsPosts,
 	}
 
-	app.render(w, r, "post.tag.page.html", data)
+	app.render(w, r, "filter.tag.page.html", data)
 }

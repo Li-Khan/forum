@@ -22,6 +22,7 @@ func (app *Application) Routes() *http.ServeMux {
 	mux.HandleFunc("/create/comment", app.createComment)
 
 	mux.HandleFunc("/post", app.post)
+	mux.HandleFunc("/post/vote", app.postVote)
 	mux.HandleFunc("/filter", app.filter)
 
 	fileServer := http.FileServer(neuteredFileSystem{http.Dir("./ui/static")})

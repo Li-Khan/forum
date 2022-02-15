@@ -345,6 +345,12 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) post(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		app.methodNotAllowed(w)
+		return
+	}
+
 	key := r.URL.Query().Get("id")
 
 	postID, err := strconv.Atoi(key)
@@ -375,7 +381,69 @@ func (app *Application) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, r, "post.id.page.html", data)
+}
 
+func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
+	if !isSession(r) {
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		w.Header().Set("Allow", http.MethodPost)
+		app.methodNotAllowed(w)
+		return
+	}
+
+	like := r.FormValue("like")
+	dislike := r.FormValue("dislike")
+
+	if (like == "" && dislike == "") || (like != "" && dislike != "") {
+		app.badRequest(w)
+		return
+	}
+
+	var vote int
+	var postID int
+	var err error
+	var post string
+
+	if like != "" {
+		postID, err = strconv.Atoi(like)
+		if err != nil {
+			app.badRequest(w)
+			return
+		}
+		post = like
+		vote = 1
+	} else {
+		postID, err = strconv.Atoi(dislike)
+		if err != nil {
+			app.badRequest(w)
+			return
+		}
+		post = dislike
+		vote = -1
+	}
+
+	c, _ := r.Cookie(cookieName)
+	value, _ := cookie.Load(c.Value)
+	login := fmt.Sprint(value)
+
+	user, err := app.Snippet.GetUser(login)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = app.Snippet.PostVote(user.ID, int64(postID), vote)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	fmt.Println(user, like, dislike)
+
+	http.Redirect(w, r, "/post?id="+post, http.StatusSeeOther)
 }
 
 func (app *Application) filter(w http.ResponseWriter, r *http.Request) {

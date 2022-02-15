@@ -278,22 +278,40 @@ func (m *SnippetModel) GetAllTags() ([]string, error) {
 
 /* ===== METHODS FOR THE LIKE ===== */
 
-// LikePost ...
-func (m *SnippetModel) LikePost(like *models.Like) error {
-	stmt := `INSERT INTO "main"."like_post"
-	("post_id", "user_id", "is_like")
-	VALUES (?, ?, ?);`
+// PostVote ...
+func (m *SnippetModel) PostVote(userID, postID int64, vote int) error {
+	stmtSelect := `SELECT id, vote FROM vote_post WHERE user_id = ? AND post_id = ?;`
+	stmtExec := `INSERT INTO "main"."vote_post" (
+		"post_id",
+		"user_id",
+		"vote")
+		VALUES (?, ?, ?)`
+	stmtDelete := `DELETE FROM "main"."vote_post" WHERE "id" = ?`
 
-	_, err := m.DB.Exec(stmt, like.PostID, like.UserID, like.IsLike)
+	var like int64
+	var id int64
+
+	row := m.DB.QueryRow(stmtSelect, userID, postID)
+	err := row.Scan(&id, &like)
+	if err == sql.ErrNoRows {
+		_, err := m.DB.Exec(stmtExec, userID, postID, vote)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	_, err = m.DB.Exec(stmtDelete, id)
 	if err != nil {
 		return err
 	}
+
+	if int64(vote) != like {
+		_, err = m.DB.Exec(stmtExec, userID, postID, vote)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
-
-// GetLike ...
-func (m *SnippetModel) GetLike(id int) (*models.Comment, error) {
-	return nil, nil
-}
-
-/* ===== METHODS FOR THE TAG ===== */

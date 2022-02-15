@@ -51,11 +51,11 @@ CREATE TABLE IF NOT EXISTS "comments" (
 );
 
 -- LIKE POST TABLE --
-CREATE TABLE IF NOT EXISTS "like_post" (
+CREATE TABLE IF NOT EXISTS "vote_post" (
 	"id"	INTEGER NOT NULL UNIQUE,
-	"post_id"	INTEGER NOT NULL,
 	"user_id"	INTEGER NOT NULL,
-	"is_like"	INTEGER NOT NULL,
+	"post_id"	INTEGER NOT NULL,
+	"vote"	INTEGER NOT NULL,
 	FOREIGN KEY("post_id") REFERENCES "posts"("id"),
 	FOREIGN KEY("user_id") REFERENCES "users"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)

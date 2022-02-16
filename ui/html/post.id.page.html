@@ -32,8 +32,8 @@
 
 
 <form action="/post/vote" method="POST">
-    <button name="like" value="{{ .Post.ID }}">Like</button>
-    <button name="dislike" value="{{ .Post.ID }}">Dislike</button>
+    <label><button name="like" value="{{ .Post.ID }}">Like</button>{{ .Post.Votes.Like }}</label>
+    <label><button name="dislike" value="{{ .Post.ID }}">Dislike</button>{{ .Post.Votes.Dislike }}</label>
 </form>
 <p>Author: <a href="/user/profile?login={{ .Post.UserLogin }}">{{ .Post.UserLogin }}</a></p>
 

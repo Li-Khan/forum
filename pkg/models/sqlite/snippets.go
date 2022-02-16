@@ -94,6 +94,12 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 
 		comments, err := m.getPostComments(post.ID)
 
+		votes, err := m.getVotesPost(post.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		post.Votes = *votes
 		post.Tags = append(post.Tags, tags...)
 		post.Comments = comments
 		posts = append(posts, post)
@@ -101,6 +107,31 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 	}
 
 	return &posts, nil
+}
+
+func (m *SnippetModel) getVotesPost(id int64) (*models.Vote, error) {
+	stmt := `SELECT vote FROM vote_post WHERE post_id = ?`
+	rows, err := m.DB.Query(stmt, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var votes models.Vote
+	var vote int
+	for rows.Next() {
+		err := rows.Scan(&vote)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		if vote == 1 {
+			votes.Like++
+		} else {
+			votes.Dislike++
+		}
+	}
+	return &votes, nil
 }
 
 /* ===== METHODS FOR THE COMMENT ===== */

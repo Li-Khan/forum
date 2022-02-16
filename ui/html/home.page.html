@@ -35,18 +35,13 @@
 </p>
 <p>Created: {{ .Created }}</p>
 
-<p>Comments:</p>
-{{ range .Comments }}
-<p>{{ . }}</p>
-{{ end }}
-
-<form action="/create/comment?post={{.ID}}" method="POST">
-    <textarea name="text" cols="30" rows="10" placeholder="Comment" required></textarea>
-    <input type="submit">
+<p>Like: {{ .Votes.Like }}</p>
+<p>Dislike: {{ .Votes.Dislike }}</p>
+<form action="/post/vote" method="POST">
+    <label><button name="like" value="{{ .ID }}">Like</button>{{ .Votes.Like }}</label>
+    <label><button name="dislike" value="{{ .ID }}">Dislike</button>{{ .Votes.Dislike }}</label>
 </form>
-
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
-
 
 {{ end }}
 

@@ -94,12 +94,12 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 
 		comments, err := m.getPostComments(post.ID)
 
-		votes, err := m.getVotesPost(post.ID)
+		votesPost, err := m.getVotesPost(post.ID)
 		if err != nil {
 			return nil, err
 		}
 
-		post.Votes = *votes
+		post.Votes = *votesPost
 		post.Tags = append(post.Tags, tags...)
 		post.Comments = comments
 		posts = append(posts, post)
@@ -111,6 +111,31 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 
 func (m *SnippetModel) getVotesPost(id int64) (*models.Vote, error) {
 	stmt := `SELECT vote FROM vote_post WHERE post_id = ?`
+	rows, err := m.DB.Query(stmt, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var votes models.Vote
+	var vote int
+	for rows.Next() {
+		err := rows.Scan(&vote)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		if vote == 1 {
+			votes.Like++
+		} else {
+			votes.Dislike++
+		}
+	}
+	return &votes, nil
+}
+
+func (m *SnippetModel) getVotesComment(id int64) (*models.Vote, error) {
+	stmt := `SELECT vote FROM vote_comment WHERE comment_id = ?`
 	rows, err := m.DB.Query(stmt, id)
 	if err != nil {
 		return nil, err
@@ -168,6 +193,14 @@ func (m *SnippetModel) getPostComments(postID int64) ([]models.Comment, error) {
 			log.Println(err)
 			continue
 		}
+
+		votes, err := m.getVotesComment(comment.ID)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		comment.Votes = *votes
 		comments = append(comments, comment)
 	}
 

@@ -20,8 +20,8 @@
 {{ range .Post.Comments }}
 <p>{{ . }}</p>
 <form action="/comment/vote" method="POST">
-    <button name="like" value="{{ .ID }}">Like</button>
-    <button name="dislike" value="{{ .ID }}">Dislike</button>
+    <label><button name="like" value="{{ .ID }}">Like</button>{{ .Votes.Like }}</label>
+    <label><button name="dislike" value="{{ .ID }}">Dislike</button>{{ .Votes.Dislike }}</label>
 </form>
 {{ end }}
 

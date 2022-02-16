@@ -353,3 +353,18 @@ func (m *SnippetModel) CreateCommentVote(userID, commentID int64, vote int) erro
 
 	return nil
 }
+
+// GetCommentByID ...
+func (m *SnippetModel) GetCommentByID(id int64) (*models.Comment, error) {
+	stmt := `SELECT * FROM comments WHERE id = ?`
+
+	comment := models.Comment{}
+
+	row := m.DB.QueryRow(stmt, id)
+	err := row.Scan(&comment.ID, &comment.UserID, &comment.PostID, &comment.Login, &comment.Text, &comment.Created)
+	if err != nil {
+		return nil, err
+	}
+
+	return &comment, nil
+}

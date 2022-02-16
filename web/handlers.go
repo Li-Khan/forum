@@ -341,7 +341,8 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	url := "/post?id=%v"
+	http.Redirect(w, r, fmt.Sprintf(url, comment.PostID), http.StatusSeeOther)
 }
 
 func (app *Application) post(w http.ResponseWriter, r *http.Request) {
@@ -406,7 +407,6 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 	var vote int
 	var postID int
 	var err error
-	var post string
 
 	if like != "" {
 		postID, err = strconv.Atoi(like)
@@ -414,7 +414,6 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 			app.badRequest(w)
 			return
 		}
-		post = like
 		vote = 1
 	} else {
 		postID, err = strconv.Atoi(dislike)
@@ -422,7 +421,6 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 			app.badRequest(w)
 			return
 		}
-		post = dislike
 		vote = -1
 	}
 
@@ -442,7 +440,8 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/post?id="+post, http.StatusSeeOther)
+	url := "/post?id=%v"
+	http.Redirect(w, r, fmt.Sprintf(url, postID), http.StatusSeeOther)
 }
 
 func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
@@ -495,13 +494,20 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	comment, err := app.Snippet.GetCommentByID(int64(commentID))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	err = app.Snippet.CreateCommentVote(user.ID, int64(commentID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	url := "/post?id=%v"
+	http.Redirect(w, r, fmt.Sprintf(url, comment.PostID), http.StatusSeeOther)
 }
 
 func (app *Application) filter(w http.ResponseWriter, r *http.Request) {

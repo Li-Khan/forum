@@ -45,11 +45,6 @@
     <input type="submit">
 </form>
 
-<form action="/post/vote" method="POST">
-    <button name="like" value="{{ .ID }}">Like</button>
-    <button name="dislike" value="{{ .ID }}">Dislike</button>
-</form>
-
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
 
 

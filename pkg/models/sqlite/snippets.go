@@ -278,8 +278,8 @@ func (m *SnippetModel) GetAllTags() ([]string, error) {
 
 /* ===== METHODS FOR THE LIKE ===== */
 
-// PostVote ...
-func (m *SnippetModel) PostVote(userID, postID int64, vote int) error {
+// CreatePostVote ...
+func (m *SnippetModel) CreatePostVote(userID, postID int64, vote int) error {
 	stmtSelect := `SELECT id, vote FROM vote_post WHERE user_id = ? AND post_id = ?;`
 	stmtExec := `INSERT INTO "main"."vote_post" (
 		"user_id",
@@ -308,6 +308,44 @@ func (m *SnippetModel) PostVote(userID, postID int64, vote int) error {
 
 	if int64(vote) != like {
 		_, err = m.DB.Exec(stmtExec, userID, postID, vote)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// CreateCommentVote ...
+func (m *SnippetModel) CreateCommentVote(userID, commentID int64, vote int) error {
+	stmtSelect := `SELECT id, vote FROM vote_comment WHERE user_id = ? AND comment_id = ?;`
+	stmtExec := `INSERT INTO "main"."vote_comment" (
+		"user_id",
+		"comment_id",
+		"vote")
+		VALUES (?, ?, ?)`
+	stmtDelete := `DELETE FROM "main"."vote_comment" WHERE "id" = ?`
+
+	var like int64
+	var id int64
+
+	row := m.DB.QueryRow(stmtSelect, userID, commentID)
+	err := row.Scan(&id, &like)
+	if err != nil {
+		_, err := m.DB.Exec(stmtExec, userID, commentID, vote)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	_, err = m.DB.Exec(stmtDelete, id)
+	if err != nil {
+		return err
+	}
+
+	if int64(vote) != like {
+		_, err = m.DB.Exec(stmtExec, userID, commentID, vote)
 		if err != nil {
 			return err
 		}

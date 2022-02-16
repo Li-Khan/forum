@@ -50,13 +50,24 @@ CREATE TABLE IF NOT EXISTS "comments" (
 	FOREIGN KEY("post_id") REFERENCES "posts"("id")
 );
 
--- LIKE POST TABLE --
+-- VOTE POST TABLE --
 CREATE TABLE IF NOT EXISTS "vote_post" (
-	"id"	INTEGER NOT NULL UNIQUE,
+	"id"	INTEGER NOT NULL,
 	"user_id"	INTEGER NOT NULL,
 	"post_id"	INTEGER NOT NULL,
 	"vote"	INTEGER NOT NULL,
 	FOREIGN KEY("post_id") REFERENCES "posts"("id"),
 	FOREIGN KEY("user_id") REFERENCES "users"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+-- VOTE COMMENT TABLE --
+CREATE TABLE IF NOT EXISTS "vote_comment" (
+	"id"	INTEGER NOT NULL,
+	"user_id"	INTEGER NOT NULL,
+	"comment_id"	INTEGER NOT NULL,
+	"vote"	INTEGER NOT NULL,
+	FOREIGN KEY("user_id") REFERENCES "users"("id"),
+	FOREIGN KEY("comment_id") REFERENCES "comments"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );

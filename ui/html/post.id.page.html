@@ -10,7 +10,7 @@
 <p>
     Tags:
     {{ range .Post.Tags }}
-    <a href="/post?tag={{ . }}">{{ . }}</a>
+    <a href="/filter?tag={{ . }}">{{ . }}</a>
     {{ end }}
 </p>
 
@@ -19,6 +19,10 @@
 <p>Comments:</p>
 {{ range .Post.Comments }}
 <p>{{ . }}</p>
+<form action="/comment/vote" method="POST">
+    <button name="like" value="{{ .ID }}">Like</button>
+    <button name="dislike" value="{{ .ID }}">Dislike</button>
+</form>
 {{ end }}
 
 <form action="/create/comment?post={{.Post.ID}}" method="POST">
@@ -26,6 +30,11 @@
     <input type="submit">
 </form>
 
+
+<form action="/post/vote" method="POST">
+    <button name="like" value="{{ .Post.ID }}">Like</button>
+    <button name="dislike" value="{{ .Post.ID }}">Dislike</button>
+</form>
 <p>Author: <a href="/user/profile?login={{ .Post.UserLogin }}">{{ .Post.UserLogin }}</a></p>
 
 {{ end }}

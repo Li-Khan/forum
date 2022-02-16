@@ -24,6 +24,7 @@ func (app *Application) Routes() *http.ServeMux {
 	mux.HandleFunc("/post", app.post)
 	mux.HandleFunc("/post/vote", app.postVote)
 	mux.HandleFunc("/filter", app.filter)
+	mux.HandleFunc("/comment/vote", app.commentVote)
 
 	fileServer := http.FileServer(neuteredFileSystem{http.Dir("./ui/static")})
 	mux.Handle("/static", http.NotFoundHandler())

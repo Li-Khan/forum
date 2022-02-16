@@ -441,7 +441,6 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	fmt.Println(user, like, dislike)
 
 	http.Redirect(w, r, "/post?id="+post, http.StatusSeeOther)
 }

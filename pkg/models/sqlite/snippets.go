@@ -282,8 +282,8 @@ func (m *SnippetModel) GetAllTags() ([]string, error) {
 func (m *SnippetModel) PostVote(userID, postID int64, vote int) error {
 	stmtSelect := `SELECT id, vote FROM vote_post WHERE user_id = ? AND post_id = ?;`
 	stmtExec := `INSERT INTO "main"."vote_post" (
-		"post_id",
 		"user_id",
+		"post_id",
 		"vote")
 		VALUES (?, ?, ?)`
 	stmtDelete := `DELETE FROM "main"."vote_post" WHERE "id" = ?`

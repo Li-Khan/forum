@@ -44,6 +44,7 @@
     </main>
 
     {{ template "footer" . }}
+    
     <!-- Tag Editor -->
     <script src="/static/js/tag-editor.js"></script>
     <script>
@@ -58,32 +59,4 @@
 </body>
 
 </html>
-{{ end }}
-
-{{ define "errors" }}
-
-{{ if eq .Errors.IsPassNotMatch true }}
-<p class="warning">password does not match</p>
-{{ end }}
-
-{{ if eq .Errors.IsInvalidForm true }}
-<p class="warning">invalid form</p>
-{{ end }}
-
-{{ if eq .Errors.IsInvalidLoginOrPassword true }}
-<p class="warning">invalid username or password</p>
-{{end}}
-
-{{ if eq .Errors.IsAlreadyExist true }}
-<p class="warning">login or email already exists</p>
-{{ end }}
-
-{{ if eq .Errors.IsInvalidLogin true }}
-<p class="warning">invalid login</p>
-{{ end }}
-
-{{ if eq .Errors.IsInvalidEmail true }}
-<p class="warning">invalid email</p>
-{{ end }}
-
 {{ end }}

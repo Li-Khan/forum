@@ -1,6 +1,6 @@
 {{ template "base" . }}
 
-{{ define "title" }}Post page{{ end }}
+{{ define "title" }}Filter page{{ end }}
 
 {{ define "main" }}
 
@@ -24,6 +24,7 @@
     <label><button name="like" value="{{ .ID }}">Like</button>{{ .Votes.Like }}</label>
     <label><button name="dislike" value="{{ .ID }}">Dislike</button>{{ .Votes.Dislike }}</label>
 </form>
+
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
 
 {{ end }}

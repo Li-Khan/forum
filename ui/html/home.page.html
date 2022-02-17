@@ -4,24 +4,19 @@
 
 {{ define "main" }}
 
-{{ if eq .IsSession false }}
-<a href="/user/signup">Sign Up</a>
-<a href="/user/signin">Sign In</a>
-{{ else }}
-<a href="/user/signout">Sign out</a>
-<a href="/user/profile?login={{ .User.Login }}">Profile</a>
-{{ end }}
 <a href="/create/post">create post</a>
 
 <p>Filter:</p>
 {{ range .Tags }}
+
 <a href="/filter?tag={{ . }}">{{ . }}</a>
+
 {{ end }}
 
 <h2>Posts:</h2>
 {{ range .Posts }}
-<hr>
 
+<hr>
 <a href="/post?id={{ .ID }}">
     <h2>{{ .Title }}</h2>
 </a>
@@ -30,7 +25,9 @@
 <p>
     Tags:
     {{ range .Tags }}
+
     <a href="/filter?tag={{ . }}">{{ . }}</a>
+
     {{ end }}
 </p>
 <p>Created: {{ .Created }}</p>
@@ -39,6 +36,8 @@
     <label><button name="like" value="{{ .ID }}">Like</button>{{ .Votes.Like }}</label>
     <label><button name="dislike" value="{{ .ID }}">Dislike</button>{{ .Votes.Dislike }}</label>
 </form>
+
+<!-- Footer -->
 <p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
 
 {{ end }}

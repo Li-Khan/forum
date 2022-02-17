@@ -58,7 +58,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{}
+	data := &templateData{IsSession: isSession(r)}
 
 	switch r.Method {
 	case http.MethodGet:
@@ -130,7 +130,7 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{}
+	data := &templateData{IsSession: isSession(r)}
 
 	switch r.Method {
 	case http.MethodGet:
@@ -216,7 +216,10 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, "profile.page.html", &templateData{User: *user})
+	app.render(w, r, "profile.page.html", &templateData{
+		User:      *user,
+		IsSession: isSession(r),
+	})
 }
 
 func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
@@ -225,7 +228,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{}
+	data := &templateData{IsSession: isSession(r)}
 
 	switch r.Method {
 	case http.MethodGet:
@@ -363,13 +366,13 @@ func (app *Application) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{}
+	data := &templateData{IsSession: isSession(r)}
 
 	var isFound bool
 	for _, post := range *posts {
 		if post.ID == int64(postID) {
 			isFound = true
-			data = &templateData{Post: post}
+			data.Post = post
 		}
 	}
 
@@ -532,6 +535,7 @@ func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, r, "filter.tag.page.html", &templateData{
-		Posts: tagsPosts,
+		Posts:     tagsPosts,
+		IsSession: isSession(r),
 	})
 }

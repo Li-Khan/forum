@@ -23,14 +23,27 @@
     </header>
 
     <nav>
+
         <a href="/">Main page</a>
+        {{ if eq .IsSession false }}
+
+        <a href="/user/signup">Sign Up</a>
+        <a href="/user/signin">Sign In</a>
+
+        {{ else }}
+
+        <a href="/user/signout">Sign out</a>
+        <a href="/user/profile?login={{ .User.Login }}">Profile</a>
+
+        {{ end }}
+
     </nav>
 
     <main>
         {{ template "main" . }}
     </main>
 
-    {{ template "footer" }}
+    {{ template "footer" . }}
     <!-- Tag Editor -->
     <script src="/static/js/tag-editor.js"></script>
     <script>
@@ -48,6 +61,7 @@
 {{ end }}
 
 {{ define "errors" }}
+
 {{ if eq .Errors.IsPassNotMatch true }}
 <p class="warning">password does not match</p>
 {{ end }}

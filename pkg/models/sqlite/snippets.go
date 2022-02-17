@@ -7,15 +7,13 @@ import (
 	"github.com/Li-Khan/forum/pkg/models"
 )
 
-// SnippetModel - define the type that wraps the sql.DB connection pool
-type SnippetModel struct {
+// ForumModel - define the type that wraps the sql.DB connection pool
+type ForumModel struct {
 	DB *sql.DB
 }
 
-/* ===== METHODS FOR THE USER ===== */
-
-// CreateUser ...
-func (m *SnippetModel) CreateUser(user *models.User) (int64, error) {
+// CreateUser - adds a user to the database
+func (m *ForumModel) CreateUser(user *models.User) (int64, error) {
 	stmt := `INSERT INTO "main"."users"(
 		"login",
 		"email",
@@ -31,8 +29,8 @@ func (m *SnippetModel) CreateUser(user *models.User) (int64, error) {
 	return result.LastInsertId()
 }
 
-// GetUser ...
-func (m *SnippetModel) GetUser(login string) (*models.User, error) {
+// GetUser - retrieves user information from the database
+func (m *ForumModel) GetUser(login string) (*models.User, error) {
 	stmt := `SELECT * FROM "main"."users" WHERE "login" = ?`
 
 	row := m.DB.QueryRow(stmt, login)
@@ -46,10 +44,8 @@ func (m *SnippetModel) GetUser(login string) (*models.User, error) {
 	return &user, nil
 }
 
-/* ===== METHODS FOR THE POST ===== */
-
-// CreatePost ...
-func (m *SnippetModel) CreatePost(post *models.Post) (int64, error) {
+// CreatePost - adds a post to the database
+func (m *ForumModel) CreatePost(post *models.Post) (int64, error) {
 	stmt := `INSERT INTO "main"."posts"
 	("user_id", "user_login", "title", "text", "created")
 	VALUES (?, ?, ?, ?, ?);`
@@ -61,8 +57,8 @@ func (m *SnippetModel) CreatePost(post *models.Post) (int64, error) {
 	return result.LastInsertId()
 }
 
-// GetAllPosts ...
-func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
+// GetAllPosts - retrieves information about all posts from the database
+func (m *ForumModel) GetAllPosts() (*[]models.Post, error) {
 	stmt := `SELECT * FROM "main"."posts" ORDER BY "created" DESC`
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
@@ -109,7 +105,7 @@ func (m *SnippetModel) GetAllPosts() (*[]models.Post, error) {
 	return &posts, nil
 }
 
-func (m *SnippetModel) getVotesPost(id int64) (*models.Vote, error) {
+func (m *ForumModel) getVotesPost(id int64) (*models.Vote, error) {
 	stmt := `SELECT vote FROM vote_post WHERE post_id = ?`
 	rows, err := m.DB.Query(stmt, id)
 	if err != nil {
@@ -134,7 +130,20 @@ func (m *SnippetModel) getVotesPost(id int64) (*models.Vote, error) {
 	return &votes, nil
 }
 
-func (m *SnippetModel) getVotesComment(id int64) (*models.Vote, error) {
+// CreateComment - adds a comment to the database
+func (m *ForumModel) CreateComment(comment *models.Comment) error {
+	stmt := `INSERT INTO "main"."comments"
+	("user_id", "post_id", "login", "text", "created")
+	VALUES (?, ?, ?, ?, ?);`
+
+	_, err := m.DB.Exec(stmt, comment.UserID, comment.PostID, comment.Login, comment.Text, comment.Created)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ForumModel) getVotesComment(id int64) (*models.Vote, error) {
 	stmt := `SELECT vote FROM vote_comment WHERE comment_id = ?`
 	rows, err := m.DB.Query(stmt, id)
 	if err != nil {
@@ -159,23 +168,8 @@ func (m *SnippetModel) getVotesComment(id int64) (*models.Vote, error) {
 	return &votes, nil
 }
 
-/* ===== METHODS FOR THE COMMENT ===== */
-
-// CreateComment ...
-func (m *SnippetModel) CreateComment(comment *models.Comment) error {
-	stmt := `INSERT INTO "main"."comments"
-	("user_id", "post_id", "login", "text", "created")
-	VALUES (?, ?, ?, ?, ?);`
-
-	_, err := m.DB.Exec(stmt, comment.UserID, comment.PostID, comment.Login, comment.Text, comment.Created)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // GetPostComments ...
-func (m *SnippetModel) getPostComments(postID int64) ([]models.Comment, error) {
+func (m *ForumModel) getPostComments(postID int64) ([]models.Comment, error) {
 	stmt := `SELECT * FROM "main"."comments" WHERE "post_id" = ? ORDER BY "created" DESC`
 
 	rows, err := m.DB.Query(stmt, postID)
@@ -207,10 +201,8 @@ func (m *SnippetModel) getPostComments(postID int64) ([]models.Comment, error) {
 	return comments, nil
 }
 
-/* ===== METHODS FOR THE TAGS ===== */
-
-// CreateTags ...
-func (m *SnippetModel) CreateTags(tags []string) error {
+// CreateTags - adds tags to the database
+func (m *ForumModel) CreateTags(tags []string) error {
 	stmt := `INSERT INTO "main"."tags" (Tag) VALUES (?)`
 
 	for _, tag := range tags {
@@ -222,7 +214,7 @@ func (m *SnippetModel) CreateTags(tags []string) error {
 	return nil
 }
 
-func (m *SnippetModel) getTagsID(tags []string) ([]int64, error) {
+func (m *ForumModel) getTagsID(tags []string) ([]int64, error) {
 	stmt := `SELECT "id" FROM "main"."tags" WHERE "tag" = ?`
 
 	tagsID := []int64{}
@@ -238,8 +230,8 @@ func (m *SnippetModel) getTagsID(tags []string) ([]int64, error) {
 	return tagsID, nil
 }
 
-// CreatePostsAndTags ...
-func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
+// CreatePostsAndTags - links tags to posts
+func (m *ForumModel) CreatePostsAndTags(postID int64, tags []string) error {
 	tagsID, err := m.getTagsID(tags)
 	if err != nil {
 		return err
@@ -250,7 +242,7 @@ func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 	VALUES (?, ?);`
 
 	for _, tagID := range tagsID {
-		_, err := m.DB.Exec(stmt, postId, tagID)
+		_, err := m.DB.Exec(stmt, postID, tagID)
 		if err != nil {
 			return err
 		}
@@ -259,7 +251,7 @@ func (m *SnippetModel) CreatePostsAndTags(postId int64, tags []string) error {
 	return nil
 }
 
-func (m *SnippetModel) getPostIDbyTagID(id int64) ([]int64, error) {
+func (m *ForumModel) getPostIDbyTagID(id int64) ([]int64, error) {
 	stmt := `SELECT "post_id" FROM "main"."posts_and_tags" WHERE "tag_id" = ?`
 
 	rows, err := m.DB.Query(stmt, id)
@@ -281,7 +273,7 @@ func (m *SnippetModel) getPostIDbyTagID(id int64) ([]int64, error) {
 	return postsID, nil
 }
 
-func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {
+func (m *ForumModel) getTagIDbyPostID(postID int64) ([]int64, error) {
 	stmt := `SELECT "tag_id" FROM "main"."posts_and_tags" WHERE "post_id" = ?`
 
 	rows, err := m.DB.Query(stmt, postID)
@@ -302,7 +294,7 @@ func (m *SnippetModel) getTagIDbyPostID(postID int64) ([]int64, error) {
 	return tagsID, nil
 }
 
-func (m *SnippetModel) getTagsByTagID(tagsID []int64) ([]string, error) {
+func (m *ForumModel) getTagsByTagID(tagsID []int64) ([]string, error) {
 	stmt := `SELECT "tag" FROM "main"."tags" WHERE "id" = ?`
 
 	tags := []string{}
@@ -318,8 +310,8 @@ func (m *SnippetModel) getTagsByTagID(tagsID []int64) ([]string, error) {
 	return tags, nil
 }
 
-// GetAllTags ...
-func (m *SnippetModel) GetAllTags() ([]string, error) {
+// GetAllTags - retrieves all tags from the database
+func (m *ForumModel) GetAllTags() ([]string, error) {
 	stmt := `SELECT tag FROM tags`
 
 	rows, err := m.DB.Query(stmt)
@@ -340,10 +332,8 @@ func (m *SnippetModel) GetAllTags() ([]string, error) {
 	return tags, nil
 }
 
-/* ===== METHODS FOR THE LIKE ===== */
-
-// CreatePostVote ...
-func (m *SnippetModel) CreatePostVote(userID, postID int64, vote int) error {
+// CreatePostVote - adds a vote for the post
+func (m *ForumModel) CreatePostVote(userID, postID int64, vote int) error {
 	stmtSelect := `SELECT id, vote FROM vote_post WHERE user_id = ? AND post_id = ?;`
 	stmtExec := `INSERT INTO "main"."vote_post" (
 		"user_id",
@@ -380,8 +370,8 @@ func (m *SnippetModel) CreatePostVote(userID, postID int64, vote int) error {
 	return nil
 }
 
-// CreateCommentVote ...
-func (m *SnippetModel) CreateCommentVote(userID, commentID int64, vote int) error {
+// CreateCommentVote - adds a vote to a comment
+func (m *ForumModel) CreateCommentVote(userID, commentID int64, vote int) error {
 	stmtSelect := `SELECT id, vote FROM vote_comment WHERE user_id = ? AND comment_id = ?;`
 	stmtExec := `INSERT INTO "main"."vote_comment" (
 		"user_id",
@@ -418,8 +408,8 @@ func (m *SnippetModel) CreateCommentVote(userID, commentID int64, vote int) erro
 	return nil
 }
 
-// GetCommentByID ...
-func (m *SnippetModel) GetCommentByID(id int64) (*models.Comment, error) {
+// GetCommentByID - gets a comment from the database
+func (m *ForumModel) GetCommentByID(id int64) (*models.Comment, error) {
 	stmt := `SELECT * FROM comments WHERE id = ?`
 
 	comment := models.Comment{}

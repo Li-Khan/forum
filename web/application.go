@@ -11,6 +11,6 @@ import (
 type Application struct {
 	InfoLog       *log.Logger
 	ErrorLog      *log.Logger
-	Snippet       *sqlite.SnippetModel
+	Forum         *sqlite.ForumModel
 	TemplateCache map[string]*template.Template
 }

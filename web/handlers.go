@@ -33,26 +33,23 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{}
-
-	posts, err := app.Snippet.GetAllPosts()
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-	data.Posts = *posts
-
-	tags, err := app.Snippet.GetAllTags()
+	posts, err := app.Forum.GetAllPosts()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	data.Tags = tags
+	tags, err := app.Forum.GetAllTags()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	data.IsSession = isSession(r)
-
-	app.render(w, r, "home.page.html", data)
+	app.render(w, r, "home.page.html", &templateData{
+		Posts:     *posts,
+		Tags:      tags,
+		IsSession: isSession(r),
+	})
 }
 
 func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +106,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 
 		data.User.Password = string(hashPass)
 		if (templateData{}.Errors) == data.Errors {
-			data.User.ID, err = app.Snippet.CreateUser(&data.User)
+			data.User.ID, err = app.Forum.CreateUser(&data.User)
 			if err != nil {
 				data.Errors.IsAlreadyExist = true
 			}
@@ -142,7 +139,7 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 		login := r.FormValue("login")
 		password := fmt.Sprintf(Salt, r.FormValue("password"))
 
-		user, err := app.Snippet.GetUser(login)
+		user, err := app.Forum.GetUser(login)
 		if err != nil {
 			data.Errors.IsInvalidLoginOrPassword = true
 		} else {
@@ -213,7 +210,7 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.Snippet.GetUser(login)
+	user, err := app.Forum.GetUser(login)
 	if err != nil {
 		app.notFound(w)
 		return
@@ -247,7 +244,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		value, _ := cookie.Load(c.Value)
 		login := fmt.Sprint(value)
 
-		user, err := app.Snippet.GetUser(login)
+		user, err := app.Forum.GetUser(login)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -265,18 +262,18 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			data.Post.UserID = user.ID
 			data.Post.UserLogin = login
 
-			postID, err := app.Snippet.CreatePost(&data.Post)
+			postID, err := app.Forum.CreatePost(&data.Post)
 			if err != nil {
 				app.serverError(w, err)
 				return
 			}
-			err = app.Snippet.CreateTags(data.Post.Tags)
+			err = app.Forum.CreateTags(data.Post.Tags)
 			if err != nil {
 				app.serverError(w, err)
 				return
 			}
 
-			err = app.Snippet.CreatePostsAndTags(postID, data.Post.Tags)
+			err = app.Forum.CreatePostsAndTags(postID, data.Post.Tags)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -315,7 +312,7 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 	value, _ := cookie.Load(c.Value)
 	login := fmt.Sprint(value)
 
-	user, err := app.Snippet.GetUser(login)
+	user, err := app.Forum.GetUser(login)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -335,7 +332,7 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.Snippet.CreateComment(comment)
+	err = app.Forum.CreateComment(comment)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -360,7 +357,7 @@ func (app *Application) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, err := app.Snippet.GetAllPosts()
+	posts, err := app.Forum.GetAllPosts()
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -428,13 +425,13 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 	value, _ := cookie.Load(c.Value)
 	login := fmt.Sprint(value)
 
-	user, err := app.Snippet.GetUser(login)
+	user, err := app.Forum.GetUser(login)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	err = app.Snippet.CreatePostVote(user.ID, int64(postID), vote)
+	err = app.Forum.CreatePostVote(user.ID, int64(postID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -488,19 +485,19 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 	value, _ := cookie.Load(c.Value)
 	login := fmt.Sprint(value)
 
-	user, err := app.Snippet.GetUser(login)
+	user, err := app.Forum.GetUser(login)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	comment, err := app.Snippet.GetCommentByID(int64(commentID))
+	comment, err := app.Forum.GetCommentByID(int64(commentID))
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	err = app.Snippet.CreateCommentVote(user.ID, int64(commentID), vote)
+	err = app.Forum.CreateCommentVote(user.ID, int64(commentID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -513,7 +510,7 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
 	tag := r.URL.Query().Get("tag")
 
-	posts, err := app.Snippet.GetAllPosts()
+	posts, err := app.Forum.GetAllPosts()
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -534,9 +531,7 @@ func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{
+	app.render(w, r, "filter.tag.page.html", &templateData{
 		Posts: tagsPosts,
-	}
-
-	app.render(w, r, "filter.tag.page.html", data)
+	})
 }

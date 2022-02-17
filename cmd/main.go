@@ -42,7 +42,7 @@ func main() {
 	app := web.Application{
 		InfoLog:       infoLog,
 		ErrorLog:      errorLog,
-		Snippet:       &sqlite.SnippetModel{DB: db},
+		Forum:         &sqlite.ForumModel{DB: db},
 		TemplateCache: templateCache,
 	}
 

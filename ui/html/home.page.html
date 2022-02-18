@@ -16,30 +16,25 @@
 <h2>Posts:</h2>
 {{ range .Posts }}
 
-<hr>
-<a href="/post?id={{ .ID }}">
-    <h2>{{ .Title }}</h2>
-</a>
-<p>Text: {{ .Text }}</p>
-
-<p>
-    Tags:
-    {{ range .Tags }}
-
-    <a href="/filter?tag={{ . }}">{{ . }}</a>
-
-    {{ end }}
-</p>
-<p>Created: {{ .Created }}</p>
-
-<form action="/post/vote" method="POST">
-    <label><button name="like" value="{{ .ID }}">Like</button>{{ .Votes.Like }}</label>
-    <label><button name="dislike" value="{{ .ID }}">Dislike</button>{{ .Votes.Dislike }}</label>
-</form>
-
-<!-- Footer -->
-<p>Author: <a href="/user/profile?login={{ .UserLogin }}">{{ .UserLogin }}</a></p>
-
+<div class="container">
+    <div class="card text-center">
+        <div class="card-header">
+            <a href="/post?id={{ .ID }}">Go to the post</a>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ .Title }}</h5>
+            <a href="/user/profile?login={{ .UserLogin }}" class="btn btn-primary">{{ .UserLogin}}</a>
+        </div>
+        <div class="card-footer text-muted">
+            {{ range .Tags}}
+            <a href="/filter?tag={{ . }}">{{ . }}</a>
+            {{ end }}
+            <br>
+            {{ .Created }}
+        </div>
+    </div>
+    <br>
+</div>
 {{ end }}
 
 {{ end }}

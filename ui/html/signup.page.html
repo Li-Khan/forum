@@ -4,11 +4,49 @@
 
 {{ define "main" }}
 <form action="/user/signup" method="POST">
-    <label>Login <input type="text" name="login" placeholder="Aboba" required></label>
+    <!-- <label>Login <input type="text" name="login" placeholder="Aboba" required></label>
     <label>Email <input type="email" name="email" placeholder="Biba@boba.com" required></label>
     <label>Password <input type="password" name="password" placeholder="qwerty1234" required></label>
     <label>Confirm password <input type="password" name="confirm" placeholder="qwerty1234" required></label>
-    <input type="submit">
+    <input type="submit"> -->
+
+    <div class="container">
+
+        <!-- Login -->
+        <div class="mb-3">
+            <label for="InputLogin1" class="form-label">Login</label>
+            <input type="text" class="form-control" name="login" id="InputLogin1" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="InputEmail1" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="InputEmail1" aria-describedby="emailHelp"
+                required>
+            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="InputPassword1" class="form-label">Password</label>
+            <input id="password" class="form-control" name="password" type="password" pattern="^\S{6,}$"
+                onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Must have at least 6 characters' : ''); if(this.checkValidity()) form.confirm.pattern = this.value;"
+                placeholder="Password" required>
+            <!-- <input type="password" class="form-control" name="password" id="InputPassword1" required> -->
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3">
+            <label for="InputConfirm1" class="form-label">Confirm password</label>
+            <input id="confirm" name="confirm" class="form-control" type="password" pattern="^\S{6,}$"
+                onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Please enter the same Password as above' : '');"
+                placeholder="Verify Password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </div>
+
     {{ template "errors" . }}
 </form>
 {{ end }}

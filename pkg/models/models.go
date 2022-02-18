@@ -59,4 +59,5 @@ type Errors struct {
 	IsAlreadyExist           bool
 	IsInvalidLogin           bool
 	IsInvalidEmail           bool
+	IsMaximumTags            bool
 }

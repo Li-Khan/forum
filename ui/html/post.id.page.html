@@ -30,7 +30,6 @@
     <input type="submit">
 </form>
 
-
 <form action="/post/vote" method="POST">
     <label><button name="like" value="{{ .Post.ID }}">Like</button>{{ .Post.Votes.Like }}</label>
     <label><button name="dislike" value="{{ .Post.ID }}">Dislike</button>{{ .Post.Votes.Dislike }}</label>

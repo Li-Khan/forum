@@ -24,4 +24,8 @@
 <p class="warning">invalid email</p>
 {{ end }}
 
+{{ if eq .Errors.IsMaximumTags true }}
+<p class="warning">maximum 5 tags</p>
+{{ end }}
+
 {{ end }}

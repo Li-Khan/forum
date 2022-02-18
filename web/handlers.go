@@ -74,26 +74,39 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 			Created:         time,
 		}
 
+		if len(data.User.Password) < 6 || len(data.User.ConfirmPassword) < 6 {
+			app.badRequest(w)
+			return
+		}
+
 		// Valid characters for the login
 		loginConvention := "^[a-zA-Z0-9]*[-]?[a-zA-Z0-9]*$"
 		// Valid characters for the email
 		emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 
 		if re, _ := regexp.Compile(loginConvention); !re.MatchString(data.User.Login) {
-			data.Errors.IsInvalidLogin = true
+			// data.Errors.IsInvalidLogin = true
+			app.badRequest(w)
+			return
 		}
 
 		_, err := mail.ParseAddress(data.User.Email)
 		if !emailRegex.MatchString(data.User.Email) || err != nil {
-			data.Errors.IsInvalidEmail = true
+			// data.Errors.IsInvalidEmail = true
+			app.badRequest(w)
+			return
 		}
 
 		if data.User.Password != data.User.ConfirmPassword {
-			data.Errors.IsPassNotMatch = true
+			// data.Errors.IsPassNotMatch = true
+			app.badRequest(w)
+			return
 		}
 
 		if data.User.Login == "" || data.User.Email == "" || data.User.Password == "" || data.User.ConfirmPassword == "" {
-			data.Errors.IsInvalidForm = true
+			// data.Errors.IsInvalidForm = true
+			app.badRequest(w)
+			return
 		}
 
 		data.User.Password = fmt.Sprintf(Salt, data.User.Password)
@@ -255,37 +268,48 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 
 		for _, tag := range data.Post.Tags {
 			if strings.Contains(tag, " ") {
-				data.Errors.IsInvalidForm = true
+				// data.Errors.IsInvalidForm = true
+				app.badRequest(w)
+				return
 			}
+		}
+
+		if len(data.Post.Tags) > 5 {
+			// data.Errors.IsMaximumTags = true
+			app.badRequest(w)
+			return
 		}
 
 		if (data.Post.Text == "" || data.Post.Title == "") || (len(data.Post.Tags) == 1 && data.Post.Tags[0] == "") {
-			data.Errors.IsInvalidForm = true
-		} else {
-			data.Post.UserID = user.ID
-			data.Post.UserLogin = login
-
-			postID, err := app.Forum.CreatePost(&data.Post)
-			if err != nil {
-				app.serverError(w, err)
-				return
-			}
-			err = app.Forum.CreateTags(data.Post.Tags)
-			if err != nil {
-				app.serverError(w, err)
-				return
-			}
-
-			err = app.Forum.CreatePostsAndTags(postID, data.Post.Tags)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
-
-		if data.Errors.IsInvalidForm {
-			app.render(w, r, "create.post.page.html", data)
+			// data.Errors.IsInvalidForm = true
+			app.badRequest(w)
 			return
 		}
+
+		data.Post.UserID = user.ID
+		data.Post.UserLogin = login
+
+		postID, err := app.Forum.CreatePost(&data.Post)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.Forum.CreateTags(data.Post.Tags)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		err = app.Forum.CreatePostsAndTags(postID, data.Post.Tags)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		// if data.Errors.IsInvalidForm || data.Errors.IsMaximumTags {
+		// 	app.render(w, r, "create.post.page.html", data)
+		// 	return
+		// }
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return

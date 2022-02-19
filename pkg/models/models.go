@@ -53,11 +53,6 @@ type Like struct {
 
 // Errors ...
 type Errors struct {
-	IsPassNotMatch           bool
-	IsInvalidForm            bool
 	IsInvalidLoginOrPassword bool
 	IsAlreadyExist           bool
-	IsInvalidLogin           bool
-	IsInvalidEmail           bool
-	IsMaximumTags            bool
 }

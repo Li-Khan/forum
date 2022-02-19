@@ -10,7 +10,7 @@ class TagEditor {
     STextBlockSelectorName = '#tb_TagEditor';       // input SelectorName
     SHasDoubles = false;                            // AddDoubles?
     SToLower = true;                                // ToLowercase Tag?
-    SMaxTags = 0;                                   // Max Tags Count, 0 == Unlimited
+    SMaxTags = 5;                                   // Max Tags Count, 0 == Unlimited
     STags = [];                                     // Writed Tags
     SSeparator = ' ';                               // Split by separator
 

@@ -13,6 +13,7 @@ class TagEditor {
     SMaxTags = 5;                                   // Max Tags Count, 0 == Unlimited
     STags = [];                                     // Writed Tags
     SSeparator = ' ';                               // Split by separator
+    SMaxSymbolInTag = 16;                           // Max Size of tag name
 
     // Inits TagEditor By Settings
     constructor(settings) {
@@ -73,6 +74,8 @@ class TagEditor {
         } else if (this.SMaxTags != 0 && this.STags.length >= this.SMaxTags) {
             return false
         } else if (!this.SHasDoubles && this.STags.includes(name)) {
+            return false
+        } else if (this.SMaxSymbolInTag != 0 && name.length > this.SMaxSymbolInTag) {
             return false
         }
         return true

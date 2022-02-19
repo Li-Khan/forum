@@ -74,6 +74,11 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 			Created:         time,
 		}
 
+		if len(data.User.Login) > 16 {
+			app.badRequest(w)
+			return
+		}
+
 		if len(data.User.Password) < 6 || len(data.User.ConfirmPassword) < 6 {
 			app.badRequest(w)
 			return
@@ -252,6 +257,23 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			Created: time,
 		}
 
+		if len(data.Post.Title) > 58 {
+			app.badRequest(w)
+			return
+		}
+
+		if len(data.Post.Tags) > 5 {
+			app.badRequest(w)
+			return
+		}
+
+		for _, tag := range data.Post.Tags {
+			if strings.Contains(tag, " ") || len(tag) > 16 {
+				app.badRequest(w)
+				return
+			}
+		}
+
 		c, _ := r.Cookie(cookieName)
 		value, _ := cookie.Load(c.Value)
 		login := fmt.Sprint(value)
@@ -259,18 +281,6 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		user, err := app.Forum.GetUser(login)
 		if err != nil {
 			app.serverError(w, err)
-			return
-		}
-
-		for _, tag := range data.Post.Tags {
-			if strings.Contains(tag, " ") {
-				app.badRequest(w)
-				return
-			}
-		}
-
-		if len(data.Post.Tags) > 5 {
-			app.badRequest(w)
 			return
 		}
 
@@ -304,6 +314,10 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 	default:
 		app.methodNotAllowed(w)
 	}
+}
+
+func (app *Application) userPosts(w http.ResponseWriter, r *http.Request) {
+	
 }
 
 func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {

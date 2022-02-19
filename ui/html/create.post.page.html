@@ -4,13 +4,14 @@
 
 {{ define "main" }}
 <form action="/create/post" method="POST">
-    <label>Title <input type="text" name="title" required></label>
+    <label>Title <input type="text" maxlength="58" name="title" required></label>
+    <div class="form-text">Maximum of 58 characters</div>
     <label>Text <input type="text" name="text" required></label>
     <div class="textblock__input" id="b_TagEditor">
         <input type="text" placeholder="...">
     </div>
     <textarea type="text" name="tags" class="d-none" id="tb_TagEditor" required></textarea>
+    <div class="form-text">Maximum of 5 tags and length of 1 tag maximum of 16 characters</div>
     <input type="submit">
-    {{ template "errors" . }}
 </form>
 {{ end }}

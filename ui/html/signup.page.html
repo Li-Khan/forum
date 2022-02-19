@@ -5,19 +5,21 @@
 {{ define "main" }}
 <form action="/user/signup" method="POST">
 
-    <div class="container">
+    <div class="auth-form">
 
         <!-- Login -->
         <div class="mb-3">
             <label for="InputLogin1" class="form-label">Login</label>
-            <input type="text" class="form-control" name="login" id="InputLogin1" placeholder="a-zA-Z0-9" pattern="[a-zA-Z0-9]+" required>
+            <input type="text" class="form-control" name="login" maxlength="16" id="InputLogin1" placeholder="Abobus"
+                pattern="[a-zA-Z0-9]+" required>
+            <div class="form-text">The login must be a maximum of 16 characters and valid characters "a-zA-Z0-9".</div>
         </div>
 
         <!-- Email -->
         <div class="mb-3">
             <label for="InputEmail1" class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" id="InputEmail1" placeholder="biba@boba.com" aria-describedby="emailHelp"
-                required>
+            <input type="email" class="form-control" name="email" id="InputEmail1" placeholder="biba@boba.com"
+                aria-describedby="emailHelp" required>
         </div>
 
         <!-- Password -->
@@ -26,7 +28,6 @@
             <input id="password" class="form-control" name="password" type="password" pattern="^\S{6,}$"
                 onchange="this.setCustomValidity(this.validity.patternMismatch ? 'Must have at least 6 characters' : ''); if(this.checkValidity()) form.confirm.pattern = this.value;"
                 placeholder="Password" required>
-            <!-- <input type="password" class="form-control" name="password" id="InputPassword1" required> -->
         </div>
 
         <!-- Confirm Password -->
@@ -37,6 +38,7 @@
                 placeholder="Verify Password" required>
         </div>
 
+        <!-- Submit -->
         <button type="submit" class="btn btn-primary">Submit</button>
 
     </div>

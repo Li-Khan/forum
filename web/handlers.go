@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/Li-Khan/forum/pkg/models"
 	"golang.org/x/crypto/bcrypt"
@@ -273,7 +274,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			Created: time,
 		}
 
-		if len(data.Post.Title) > 58 {
+		if utf8.RuneCountInString(data.Post.Title) > 58 {
 			app.badRequest(w)
 			return
 		}
@@ -284,7 +285,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, tag := range data.Post.Tags {
-			if strings.Contains(tag, " ") || len(tag) > 16 {
+			if strings.Contains(tag, " ") || utf8.RuneCountInString(tag) > 16 {
 				app.badRequest(w)
 				return
 			}
@@ -366,6 +367,11 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		Login:   user.Login,
 		Text:    r.FormValue("text"),
 		Created: time,
+	}
+
+	if utf8.RuneCountInString(comment.Text) > 200 {
+		app.badRequest(w)
+		return
 	}
 
 	if comment.Text == "" {

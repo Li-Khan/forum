@@ -20,10 +20,10 @@
             <ul class="navbar-nav">
                 {{ if eq .IsSession false }}
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/user/signup">Sign up</a>
+                    <a class="nav-link" aria-current="page" href="/user/signin">Sign in</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/user/signin">Sign in</a>
+                    <a class="nav-link" aria-current="page" href="/user/signup">Sign up</a>
                 </li>
                 {{ else }}
                 <li class="nav-item">
@@ -41,14 +41,25 @@
 
 {{ define "main" }}
 <form action="/create/post" method="POST">
-    <label>Title <input type="text" maxlength="58" name="title" required></label>
-    <div class="form-text">Maximum of 58 characters</div>
-    <label>Text <input type="text" name="text" required></label>
+
+    <div class="mb-3">
+        <label for="TitleInput" class="form-label">Titile</label>
+        <input name="title" type="text" class="form-control" id="TitleInput">
+        <div class="form-text">Maximum of 58 characters</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="TextInput" class="form-label">Text</label>
+        <textarea name="text" class="form-control" id="TextInput" rows="3"></textarea>
+    </div>
+
     <div class="textblock__input" id="b_TagEditor">
         <input type="text" placeholder="...">
     </div>
     <textarea type="text" name="tags" class="d-none" id="tb_TagEditor" required></textarea>
     <div class="form-text">Maximum of 5 tags and length of 1 tag maximum of 16 characters</div>
-    <input type="submit">
+
+    <button class="btn btn-primary">Post</button>
+
 </form>
 {{ end }}

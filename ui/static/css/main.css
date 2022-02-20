@@ -12,3 +12,15 @@ textarea {
     height: 100px; /* Высота поля в пикселах */
     resize: none; /* Запрещаем изменять размер */
 }
+
+.navbar {
+    position: fixed;   
+    top: 0;   
+    left: 0;   
+    z-index: 9999;   
+    width: 100%;  
+}
+
+.main {
+    margin-top: 70px;
+}

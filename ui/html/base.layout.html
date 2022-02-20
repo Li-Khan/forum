@@ -18,11 +18,11 @@
 </head>
 
 <body>
-    <header>
+    <!-- <header>
         <h1><a href="/">Forum</a></h1>
-    </header>
+    </header> -->
 
-    <nav>
+    <!-- <nav>
 
         <a href="/">Main page</a>
         {{ if eq .IsSession false }}
@@ -37,14 +37,15 @@
 
         {{ end }}
 
-    </nav>
+    </nav> -->
+    {{ template "navbar" . }}
 
     <main>
         {{ template "main" . }}
     </main>
 
     {{ template "footer" . }}
-    
+
     <!-- Tag Editor -->
     <script src="/static/js/tag-editor.js"></script>
     <script>

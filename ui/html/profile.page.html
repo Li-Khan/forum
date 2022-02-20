@@ -16,7 +16,7 @@
                     <a class="nav-link" aria-current="page" href="/">Home</a>
                 </li>
             </ul>
-            
+
             <ul class="navbar-nav">
                 {{ if eq .IsSession false }}
                 <li class="nav-item">
@@ -40,18 +40,37 @@
 {{ end }}
 
 {{ define "main" }}
-<!-- <p><strong>Login:</strong> {{ .User.Login }}</p>
-<p><strong>Email:</strong> {{ .User.Email }}</p>
-<p><strong>Created:</strong> {{ .User.Created }}</p>
-<p><strong>Posts:</strong> тут пока ничево:) </p> -->
+
 <div class="card" style="width: 18rem;">
     <img src="/static/img/avatar.jpg" class="card-img-top" alt="avatar">
     <div class="card-body">
         <p class="card-text"><strong>Login:</strong> {{ .User.Login }}</p>
         <p class="card-text"><strong>Email:</strong> {{ .User.Email }}</p>
         <p class="card-text"><strong>Created:</strong> {{ .User.Created }}</p>
-        <!-- <p class="card-text"><strong>Posts:</strong> {{ .User.Login }}</p> -->
+        <p class="card-text"><strong>Posts:</strong> {{ .NumOfPosts }}</p>
     </div>
 </div>
+<br>
+
+{{ range .Posts }}
+
+<div class="card text-center">
+    <div class="card-header">
+        <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ .Title }}</h5>
+    </div>
+    <div class="card-footer text-muted">
+        {{ range .Tags}}
+        <a href="/filter?tag={{ . }}">{{ . }}</a>
+        {{ end }}
+        <br>
+        {{ .Created }}
+    </div>
+</div>
+<br>
+
+{{ end }}
 
 {{ end }}

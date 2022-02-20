@@ -41,37 +41,54 @@
 
 {{ define "main" }}
 
-<a href="/create/post">create post</a>
+<!-- Create Post Button -->
+<a class="btn btn-secondary" href="/create/post" role="button">Create Post</a>
 
-<p>Filter:</p>
-{{ range .Tags }}
+<!-- Modal button -->
+<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Filter by tags
+</button>
 
-<a href="/filter?tag={{ . }}">{{ . }}</a>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Tags</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ range .Tags }}
+                <a href="/filter?tag={{ . }}">{{ . }}</a> |
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</div>
 
-{{ end }}
 
 <h2>Posts:</h2>
 {{ range .Posts }}
 
-<div class="container">
-    <div class="card text-center">
-        <div class="card-header">
-            <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">{{ .Title }}</h5>
-            <a href="/user/profile?login={{ .UserLogin }}" class="btn btn-primary">{{ .UserLogin}}</a>
-        </div>
-        <div class="card-footer text-muted">
-            {{ range .Tags}}
-            <a href="/filter?tag={{ . }}">{{ . }}</a>
-            {{ end }}
-            <br>
-            {{ .Created }}
-        </div>
+
+<div class="card text-center">
+    <div class="card-header">
+        <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
     </div>
-    <br>
+    <div class="card-body">
+        <h5 class="card-title">{{ .Title }}</h5>
+        <a href="/user/profile?login={{ .UserLogin }}" class="btn btn-primary">{{ .UserLogin}}</a>
+    </div>
+    <div class="card-footer text-muted">
+        {{ range .Tags}}
+        <a href="/filter?tag={{ . }}">{{ . }}</a>
+        {{ end }}
+        <br>
+        {{ .Created }}
+    </div>
 </div>
+<br>
+
 
 {{ end }}
 

@@ -230,9 +230,25 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	posts, err := app.Forum.GetAllPosts()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	var userPosts []models.Post
+
+	for _, post := range *posts {
+		if post.UserLogin == login {
+			userPosts = append(userPosts, post)
+		}
+	}
+
 	app.render(w, r, "profile.page.html", &templateData{
-		User:      *user,
-		IsSession: isSession(r),
+		User:       *user,
+		IsSession:  isSession(r),
+		Posts:      userPosts,
+		NumOfPosts: len(userPosts),
 	})
 }
 
@@ -314,10 +330,6 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 	default:
 		app.methodNotAllowed(w)
 	}
-}
-
-func (app *Application) userPosts(w http.ResponseWriter, r *http.Request) {
-	
 }
 
 func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {

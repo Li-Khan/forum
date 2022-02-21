@@ -1,0 +1,16 @@
+{{ template "base" . }}
+
+{{ define "title" }}Error page{{ end }}
+
+{{ define "navbar" }}{{end}}
+
+{{ define "main" }}
+
+<h1 align="center">Error</h1>
+<h3 align="center">{{ .Error }}</h3>
+<div class="text-center">
+    <a class="btn align-content-center btn-secondary" href="/" role="button">Go Back</a>
+</div>
+
+
+{{ end }}

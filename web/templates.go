@@ -16,6 +16,7 @@ type templateData struct {
 	NumOfPosts int
 	Tags       []string
 	IsSession  bool
+	Error      string
 }
 
 // NewTemplateCache - initializes the template cache

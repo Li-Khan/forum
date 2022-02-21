@@ -1,11 +1,13 @@
 {{ define "errors" }}
 
-{{ if eq .Errors.IsInvalidLoginOrPassword true }}
-<p class="warning">invalid login or password</p>
-{{end}}
+<div class="text-center">
+    {{ if eq .Errors.IsInvalidLoginOrPassword true }}
+    <p class="warning">invalid login or password</p>
+    {{end}}
 
-{{ if eq .Errors.IsAlreadyExist true }}
-<p class="warning">login or email already exists</p>
-{{ end }}
+    {{ if eq .Errors.IsAlreadyExist true }}
+    <p class="warning">login or email already exists</p>
+    {{ end }}
+</div>
 
 {{ end }}

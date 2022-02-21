@@ -54,6 +54,8 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
+	go web.SessionGC()
+
 	infoLog.Printf("Starting the server on %s", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Println(err)

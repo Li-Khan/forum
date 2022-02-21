@@ -13,14 +13,27 @@ const cookieName string = "Forum"
 
 var cookie sync.Map
 
-func addCookie(w http.ResponseWriter, r *http.Request, login string) {
-	u := uuid.NewV4()
+type expires struct {
+	exp map[interface{}]time.Time
+	mu  sync.Mutex
+}
 
+var expireSession expires
+
+func addCookie(w http.ResponseWriter, r *http.Request, login string) {
+	expireSession.exp = make(map[interface{}]time.Time)
+
+	u := uuid.NewV4()
 	oneUser(login, u.String())
 
 	cookie.Store(u.String(), login)
-
 	expire := time.Now().AddDate(0, 0, 1)
+	expire = time.Now().Add(time.Second * 10)
+
+	expireSession.mu.Lock()
+	expireSession.exp[u.String()] = expire
+	expireSession.mu.Unlock()
+
 	c := &http.Cookie{
 		Name:     cookieName,
 		Value:    u.String(),
@@ -54,4 +67,20 @@ func oneUser(login, uuid string) {
 		}
 		return true
 	})
+}
+
+// SessionGC ...
+func SessionGC() {
+	for {
+		cookie.Range(func(key, value interface{}) bool {
+			fmt.Printf("key = %v\tvalue - %v\n", key, value)
+			expireSession.mu.Lock()
+			if expireSession.exp[key].Unix() < time.Now().Unix() {
+				cookie.Delete(key)
+			}
+			expireSession.mu.Unlock()
+			return true
+		})
+		time.Sleep(time.Second * 3)
+	}
 }

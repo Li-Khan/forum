@@ -320,7 +320,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = app.Forum.CreatePostsAndTags(postID, data.Post.Tags)
+		err = app.Forum.LinkTagsToAPost(postID, data.Post.Tags)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -478,7 +478,7 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.Forum.CreatePostVote(user.ID, int64(postID), vote)
+	err = app.Forum.AddVoteToPost(user.ID, int64(postID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -544,7 +544,7 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = app.Forum.CreateCommentVote(user.ID, int64(commentID), vote)
+	err = app.Forum.AddVoteToComment(user.ID, int64(commentID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return

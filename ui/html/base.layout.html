@@ -18,26 +18,6 @@
 </head>
 
 <body>
-    <!-- <header>
-        <h1><a href="/">Forum</a></h1>
-    </header> -->
-
-    <!-- <nav>
-
-        <a href="/">Main page</a>
-        {{ if eq .IsSession false }}
-
-        <a href="/user/signup">Sign Up</a>
-        <a href="/user/signin">Sign In</a>
-
-        {{ else }}
-
-        <a href="/user/signout">Sign out</a>
-        <a href="/user/profile?login={{ .User.Login }}">Profile</a>
-
-        {{ end }}
-
-    </nav> -->
     {{ template "navbar" . }}
 
     <main class="main">

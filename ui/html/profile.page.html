@@ -41,36 +41,45 @@
 
 {{ define "main" }}
 
-<div class="card" style="width: 18rem;">
-    <img src="/static/img/avatar.jpg" class="card-img-top" alt="avatar">
-    <div class="card-body">
-        <p class="card-text"><strong>Login:</strong> {{ .User.Login }}</p>
-        <p class="card-text"><strong>Email:</strong> {{ .User.Email }}</p>
-        <p class="card-text"><strong>Created:</strong> {{ .User.Created }}</p>
-        <p class="card-text"><strong>Posts:</strong> {{ .NumOfPosts }}</p>
-    </div>
-</div>
-<br>
+<div class="row g-0">
 
-{{ range .Posts }}
-
-<div class="card text-center">
-    <div class="card-header">
-        <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
-    </div>
-    <div class="card-body">
-        <h5 class="card-title">{{ .Title }}</h5>
-    </div>
-    <div class="card-footer text-muted">
-        {{ range .Tags}}
-        <a href="/filter?tag={{ . }}">{{ . }}</a>
-        {{ end }}
+    <div class="col-6 col-md-4 profile-user">
+        <div class="card" style="width: 18rem;">
+            <img src="/static/img/avatar.jpg" class="card-img-top" alt="avatar">
+            <div class="card-body">
+                <p class="card-text"><strong>Login:</strong> {{ .User.Login }}</p>
+                <p class="card-text"><strong>Joined:</strong> {{ .User.Created }}</p>
+                <p class="card-text"><strong>Posts:</strong> {{ .NumOfPosts }}</p>
+            </div>
+        </div>
         <br>
-        {{ .Created }}
+    </div>
+
+    <div class="w-100 d-none d-md-block"></div>
+
+    <div class="col-sm-6 col-md-8 profile-post">
+        {{ range .Posts }}
+
+        <div class="card text-center">
+            <div class="card-header">
+                <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ .Title }}</h5>
+            </div>
+            <div class="card-footer text-muted">
+                {{ range .Tags}}
+                <a href="/filter?tag={{ . }}">{{ . }}</a>
+                {{ end }}
+                <br>
+                {{ .Created }}
+            </div>
+        </div>
+        <br>
+        {{ end }}
     </div>
 </div>
-<br>
 
-{{ end }}
+<br>
 
 {{ end }}

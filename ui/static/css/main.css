@@ -32,3 +32,13 @@ textarea {
     height:30px;
     width:100%;
 }
+
+.profile-user {
+    position: fixed;   
+    z-index: 9999;   
+    /* width: 100%;  */
+}
+
+.profile-post {
+    margin-left: 300px;
+}

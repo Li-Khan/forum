@@ -2,18 +2,18 @@ package web
 
 import "net/http"
 
-func userRedirect(w http.ResponseWriter, r *http.Request) {
+func (app *Application) userRedirect(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/user/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func createRedirect(w http.ResponseWriter, r *http.Request) {
+func (app *Application) createRedirect(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/create/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 

@@ -10,14 +10,14 @@ func (app *Application) Routes() *http.ServeMux {
 
 	mux.HandleFunc("/", app.home)
 	// user handlers
-	mux.HandleFunc("/user/", userRedirect)
+	mux.HandleFunc("/user/", app.userRedirect)
 	mux.HandleFunc("/user/signin", app.signin)
 	mux.HandleFunc("/user/signup", app.signup)
 	mux.HandleFunc("/user/signout", app.signout)
 	mux.HandleFunc("/user/profile", app.profile)
 
 	// create handlers
-	mux.HandleFunc("/create/", createRedirect)
+	mux.HandleFunc("/create/", app.createRedirect)
 	mux.HandleFunc("/create/post", app.createPost)
 	mux.HandleFunc("/create/comment", app.createComment)
 

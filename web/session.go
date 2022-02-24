@@ -28,7 +28,6 @@ func addCookie(w http.ResponseWriter, r *http.Request, login string) {
 
 	cookie.Store(u.String(), login)
 	expire := time.Now().AddDate(0, 0, 1)
-	expire = time.Now().Add(time.Second * 10)
 
 	expireSession.mu.Lock()
 	expireSession.exp[u.String()] = expire
@@ -42,13 +41,6 @@ func addCookie(w http.ResponseWriter, r *http.Request, login string) {
 		Expires:  expire,
 	}
 	http.SetCookie(w, c)
-
-	// не забыть удалить все что ниже
-	cookie.Range(func(key, value interface{}) bool {
-		fmt.Printf("key = %v\tvalue - %v", key, value)
-		return true
-	})
-	fmt.Println()
 }
 
 func isSession(r *http.Request) bool {
@@ -73,7 +65,6 @@ func oneUser(login, uuid string) {
 func SessionGC() {
 	for {
 		cookie.Range(func(key, value interface{}) bool {
-			fmt.Printf("key = %v\tvalue - %v\n", key, value)
 			expireSession.mu.Lock()
 			if expireSession.exp[key].Unix() < time.Now().Unix() {
 				cookie.Delete(key)
@@ -81,6 +72,6 @@ func SessionGC() {
 			expireSession.mu.Unlock()
 			return true
 		})
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 60)
 	}
 }

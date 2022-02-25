@@ -214,7 +214,6 @@ func (m *ForumModel) getVotesComment(id int64) (*models.Vote, error) {
 	return &votes, nil
 }
 
-// GetPostComments ...
 func (m *ForumModel) getPostComments(postID int64) ([]models.Comment, error) {
 	stmt := `SELECT * FROM "main"."comments" WHERE "post_id" = ? ORDER BY "created" DESC`
 

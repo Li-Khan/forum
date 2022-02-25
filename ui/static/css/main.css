@@ -23,20 +23,20 @@ textarea {
 
 .main {
     margin-top: 70px;
+    margin-bottom: 55px;
 }
 
 .footer {
-    position:fixed;
-    left:0px;
-    bottom:0px;
-    height:30px;
-    width:100%;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    height: 55px;
+    width: 100%;
 }
 
 .profile-user {
     position: fixed;   
-    z-index: 9999;   
-    /* width: 100%;  */
+    z-index: 9999;
 }
 
 .profile-post {

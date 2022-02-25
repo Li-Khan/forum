@@ -21,6 +21,9 @@ type expires struct {
 var expireSession expires
 
 func addCookie(w http.ResponseWriter, r *http.Request, login string) {
+	expireSession.mu.Lock()
+	defer expireSession.mu.Unlock()
+
 	expireSession.exp = make(map[interface{}]time.Time)
 
 	u := uuid.NewV4()
@@ -29,9 +32,7 @@ func addCookie(w http.ResponseWriter, r *http.Request, login string) {
 	cookie.Store(u.String(), login)
 	expire := time.Now().AddDate(0, 0, 1)
 
-	expireSession.mu.Lock()
 	expireSession.exp[u.String()] = expire
-	expireSession.mu.Unlock()
 
 	c := &http.Cookie{
 		Name:     cookieName,

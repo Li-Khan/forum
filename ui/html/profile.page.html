@@ -52,12 +52,10 @@
                 <p class="card-text"><strong>Posts:</strong> {{ .NumOfPosts }}</p>
             </div>
         </div>
-        <br>
     </div>
 
-    <div class="w-100 d-none d-md-block"></div>
-
     <div class="col-sm-6 col-md-8 profile-post">
+        {{ if .Posts }}
         {{ range .Posts }}
 
         <div class="card text-center">
@@ -76,6 +74,11 @@
             </div>
         </div>
         <br>
+
+        {{ end }}
+
+        {{ else }}
+        <h4 class="text-center">The user has not created posts yet &#9785;</h4>
         {{ end }}
     </div>
 </div>

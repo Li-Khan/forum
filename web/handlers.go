@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/mail"
@@ -539,6 +540,10 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	comment, err := app.Forum.GetCommentByID(int64(commentID))
+	if err == sql.ErrNoRows {
+		app.badRequest(w)
+		return
+	}
 	if err != nil {
 		app.serverError(w, err)
 		return

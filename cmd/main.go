@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	addr := flag.String("addr", ":4000", "HTTP Network address")
+	addr := flag.String("addr", ":27960", "HTTP Network address")
 	dsn := flag.String("dsn", "forum.db", "Name of the database")
 	flag.Parse()
 

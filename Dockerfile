@@ -5,3 +5,4 @@ LABEL authors="Li-Khan & quazar"
 ADD . /app/
 WORKDIR /app
 RUN go build -o main ./cmd/
+CMD ["/app/main"]

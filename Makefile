@@ -3,10 +3,10 @@
 build:
 	go build -o bin/main ./cmd
 
-.PHONY: docker
-
 run:
 	@go run ./cmd/
+
+.PHONY: docker
 
 docker:
 	docker volume create li-khan-forum

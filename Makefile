@@ -9,14 +9,17 @@ run:
 	@go run ./cmd/
 
 docker:
-	docker volume create web
+	docker volume create li-khan-forum
 	docker build -t forum .
-	docker run --rm --name web -p 27969:27960 -v web:/app/ forum
 
 	@echo "Running server:"
-	@echo "\n\t***************************"
-	@echo "\t* http://localhost:27969/ *"
-	@echo "\t***************************\n"
+	@echo "\n***************************"
+	@echo "*                         *"
+	@echo "* http://localhost:27969/ *"
+	@echo "*                         *"
+	@echo "***************************\n"
+
+	docker run --rm --name web -p 27969:27960 -v li-khan-forum:/app/ forum
 
 docker-delete:
 	docker rmi forum

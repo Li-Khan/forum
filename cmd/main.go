@@ -21,9 +21,10 @@ func main() {
 	// цвета для логгирования
 	colorRed := "\033[31m"
 	colorGreen := "\033[32m"
+	colorReset := "\033[0m"
 
-	infoLog := log.New(os.Stdout, colorGreen+"INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stderr, colorRed+"ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	infoLog := log.New(os.Stdout, colorGreen+"INFO\t"+colorReset, log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, colorRed+"ERROR\t"+colorReset, log.Ldate|log.Ltime|log.Lshortfile)
 
 	db, err := models.OpenDB(*dsn)
 	if err != nil {

@@ -469,17 +469,13 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 		vote = -1
 	}
 
-	c, _ := r.Cookie(cookieName)
-	value, _ := cookie.Load(c.Value)
-	login := fmt.Sprint(value)
-
-	user, err := app.Forum.GetUser(login)
+	post, err := app.Forum.GetPostByID(postID)
 	if err != nil {
-		app.serverError(w, err)
+		app.badRequest(w)
 		return
 	}
 
-	err = app.Forum.AddVoteToPost(user.ID, int64(postID), vote)
+	err = app.Forum.AddVoteToPost(post.UserID, int64(postID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return

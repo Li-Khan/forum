@@ -68,6 +68,18 @@ func (m *ForumModel) GetAllPosts() (*[]models.Post, error) {
 	return &posts, nil
 }
 
+// GetPostByID ...
+func (m *ForumModel) GetPostByID(id int) (*models.Post, error) {
+	stmt := `SELECT * FROM "main"."posts" WHERE "id" = ?`
+	row := m.DB.QueryRow(stmt, id)
+	post := models.Post{}
+	err := row.Scan(&post.ID, &post.UserID, &post.UserLogin, &post.Title, &post.Text, &post.Created)
+	if err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
+
 // LinkTagsToAPost - links tags to posts
 func (m *ForumModel) LinkTagsToAPost(postID int64, tags []string) error {
 	tagsID, err := m.getTagsID(tags)

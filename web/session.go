@@ -18,13 +18,11 @@ type expires struct {
 	mu  sync.Mutex
 }
 
-var expireSession expires
+var expireSession = expires{exp: make(map[interface{}]time.Time)}
 
 func addCookie(w http.ResponseWriter, r *http.Request, login string) {
 	expireSession.mu.Lock()
 	defer expireSession.mu.Unlock()
-
-	expireSession.exp = make(map[interface{}]time.Time)
 
 	u := uuid.NewV4()
 	oneUser(login, u.String())
@@ -56,6 +54,7 @@ func isSession(r *http.Request) bool {
 func oneUser(login, uuid string) {
 	cookie.Range(func(key, value interface{}) bool {
 		if login == fmt.Sprint(value) {
+			fmt.Println(login)
 			cookie.Delete(key)
 		}
 		return true
@@ -74,7 +73,7 @@ func SessionGC() {
 	for {
 		cookie.Range(func(key, value interface{}) bool {
 			expireSession.mu.Lock()
-			if expireSession.exp[key].Unix() < time.Now().Unix() {
+			if time.Now().Unix() > expireSession.exp[key].Unix() {
 				cookie.Delete(key)
 			}
 			expireSession.mu.Unlock()

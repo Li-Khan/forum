@@ -1,3 +1,7 @@
+body {
+    overflow-x: hidden;
+}
+
 .warning {
     color: red;
 }
@@ -8,17 +12,20 @@
 }
 
 textarea {
-    width: 100%; /* Ширина поля в процентах */
-    height: 100px; /* Высота поля в пикселах */
-    resize: none; /* Запрещаем изменять размер */
+    width: 100%;
+    /* Ширина поля в процентах */
+    height: 100px;
+    /* Высота поля в пикселах */
+    resize: none;
+    /* Запрещаем изменять размер */
 }
 
 .navbar {
-    position: fixed;   
-    top: 0;   
-    left: 0;   
-    z-index: 9999;   
-    width: 100%;  
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
 }
 
 .main {
@@ -34,11 +41,23 @@ textarea {
     width: 100%;
 }
 
-.profile-user {
-    position: fixed;   
-    z-index: 9999;
+
+/* SCROLL */
+
+.box {
+    box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.3);
+    transform: translateX(400%);
+    transition: transform 0.4s ease;
 }
 
-.profile-post {
-    margin-left: 300px;
+.box:nth-of-type(even) {
+    transform: translateX(-400%);
+}
+
+.box.show {
+    transform: translateX(0);
+}
+
+.box h2 {
+    font-size: 36px;
 }

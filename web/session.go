@@ -62,6 +62,13 @@ func oneUser(login, uuid string) {
 	})
 }
 
+func getLogin(r *http.Request) string {
+	c, _ := r.Cookie(cookieName)
+	value, _ := cookie.Load(c.Value)
+	login := fmt.Sprint(value)
+	return login
+}
+
 // SessionGC ...
 func SessionGC() {
 	for {

@@ -219,9 +219,7 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if isSession(r) && login == "" {
-		c, _ := r.Cookie(cookieName)
-		value, _ := cookie.Load(c.Value)
-		login = fmt.Sprint(value)
+		login = getLogin(r)
 		http.Redirect(w, r, "/user/profile?login="+login, http.StatusSeeOther)
 		return
 	}
@@ -292,9 +290,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		c, _ := r.Cookie(cookieName)
-		value, _ := cookie.Load(c.Value)
-		login := fmt.Sprint(value)
+		login := getLogin(r)
 
 		user, err := app.Forum.GetUser(login)
 		if err != nil {
@@ -351,9 +347,7 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, _ := r.Cookie(cookieName)
-	value, _ := cookie.Load(c.Value)
-	login := fmt.Sprint(value)
+	login := getLogin(r)
 
 	user, err := app.Forum.GetUser(login)
 	if err != nil {
@@ -525,9 +519,7 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 		vote = -1
 	}
 
-	c, _ := r.Cookie(cookieName)
-	value, _ := cookie.Load(c.Value)
-	login := fmt.Sprint(value)
+	login := getLogin(r)
 
 	user, err := app.Forum.GetUser(login)
 	if err != nil {

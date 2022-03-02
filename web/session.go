@@ -73,6 +73,6 @@ func SessionGC() {
 			expireSession.mu.Unlock()
 			return true
 		})
-		time.Sleep(time.Second * 60)
+		time.Sleep(time.Second * 10)
 	}
 }

@@ -44,6 +44,16 @@ textarea {
 
 /* SCROLL */
 
+:root {
+    --white: #fcfcfc;
+    --black: #252525;
+    --purple: #cf07fb;
+    --purple-gradient: linear-gradient(to top, #9733EE, #cf07fb);
+    /*--green: #49e691; */
+    --green: #36e77e;
+    --green-gradient: linear-gradient(to top, #061700, #49e691);
+}
+
 .box {
     box-shadow: inset 0px 0px 20px rgba(0, 0, 0, 0.3);
     transform: translateX(400%);

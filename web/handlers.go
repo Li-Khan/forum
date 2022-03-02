@@ -275,7 +275,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			Created: time,
 		}
 
-		if utf8.RuneCountInString(data.Post.Title) > 58 {
+		if utf8.RuneCountInString(data.Post.Title) > 58 || utf8.RuneCountInString(data.Post.Text) > 3000 {
 			app.badRequest(w)
 			return
 		}

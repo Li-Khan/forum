@@ -1,13 +1,8 @@
-{{ template "base" . }}
-
-{{ define "title" }}Create post{{ end }}
-
-{{ define "navbar" }}
+{{ template "base" . }} {{ define "title" }}Create post{{ end }} {{ define "navbar" }}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">Forum</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -37,9 +32,7 @@
         </div>
     </div>
 </nav>
-{{ end }}
-
-{{ define "main" }}
+{{ end }} {{ define "main" }}
 <form action="/create/post" method="POST">
 
     <div class="mb-3">
@@ -50,7 +43,8 @@
 
     <div class="mb-3">
         <label for="TextInput" class="form-label">Text</label>
-        <textarea name="text" class="form-control" id="TextInput" rows="3" required></textarea>
+        <textarea name="text" class="form-control" maxlength="3000" id="TextInput" rows="3" required></textarea>
+        <div class="form-text">Maximum of 3000 characters</div>
     </div>
 
     <div class="textblock__input" id="b_TagEditor">

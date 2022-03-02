@@ -1,13 +1,8 @@
-{{ template "base" . }}
-
-{{ define "title" }}Filter page{{ end }}
-
-{{ define "navbar" }}
+{{ template "base" . }} {{ define "title" }}Filter page{{ end }} {{ define "navbar" }}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">Forum</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -37,13 +32,9 @@
         </div>
     </div>
 </nav>
-{{ end }}
+{{ end }} {{ define "main" }} {{ range .Posts }}
 
-{{ define "main" }}
-
-{{ range .Posts }}
-
-<div class="card text-center">
+<div class="card text-center box">
     <div class="card-header">
         <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
     </div>
@@ -53,14 +44,8 @@
     </div>
     <div class="card-footer text-muted">
         {{ range .Tags}}
-        <a href="/filter?tag={{ . }}">{{ . }}</a>
-        {{ end }}
-        <br>
-        {{ .Created }}
+        <a href="/filter?tag={{ . }}">{{ . }}</a> {{ end }}
+        <br> {{ .Created }}
     </div>
 </div>
-<br>
-
-{{ end }}
-
-{{ end }}
+<br> {{ end }} {{ end }}

@@ -273,7 +273,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			Created: time,
 		}
 
-		if utf8.RuneCountInString(data.Post.Title) > 58 || utf8.RuneCountInString(data.Post.Text) > 3000 {
+		if utf8.RuneCountInString(data.Post.Title) > 58 || utf8.RuneCountInString(data.Post.Text) > 10000 {
 			app.badRequest(w)
 			return
 		}
@@ -463,13 +463,23 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 		vote = -1
 	}
 
-	post, err := app.Forum.GetPostByID(postID)
+	c, _ := r.Cookie(cookieName)
+	value, _ := cookie.Load(c.Value)
+	login := fmt.Sprint(value)
+
+	user, err := app.Forum.GetUser(login)
 	if err != nil {
 		app.badRequest(w)
 		return
 	}
 
-	err = app.Forum.AddVoteToPost(post.UserID, int64(postID), vote)
+	_, err = app.Forum.GetPostByID(postID)
+	if err != nil {
+		app.badRequest(w)
+		return
+	}
+
+	err = app.Forum.AddVoteToPost(user.ID, int64(postID), vote)
 	if err != nil {
 		app.serverError(w, err)
 		return

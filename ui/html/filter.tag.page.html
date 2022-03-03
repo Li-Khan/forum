@@ -33,19 +33,34 @@
     </div>
 </nav>
 {{ end }} {{ define "main" }} {{ range .Posts }}
+<!-- POST -->
+<div class="conatiner mb80 box">
+    <div class="vtimeline-block">
+        <div class="vtimeline-content">
+            <img src="/static/img/fuflik.png" alt="" class="img-fluid mb20">
+            <a href="/post?id={{ .ID }}">
+                <h3>{{ .Title }}</h3>
+            </a>
+            <ul class="post-meta list-inline">
+                <li class="list-inline-item">
+                    <i class="fa fa-user-circle-o"></i> <a href="/user/profile?login={{ .UserLogin }}">{{
+                        .UserLogin
+                        }}</a>
+                </li>
+                <li class="list-inline-item">
+                    <i class="fa fa-calendar-o"></i> {{ .Created }}
+                </li>
+            </ul>
 
-<div class="card text-center box">
-    <div class="card-header">
-        <a href="/post?id={{ .ID }}" class="link-dark">Go to the post</a>
-    </div>
-    <div class="card-body">
-        <h5 class="card-title">{{ .Title }}</h5>
-        <a href="/user/profile?login={{ .UserLogin }}" class="btn btn-primary">{{ .UserLogin}}</a>
-    </div>
-    <div class="card-footer text-muted">
-        {{ range .Tags}}
-        <a href="/filter?tag={{ . }}">{{ . }}</a> {{ end }}
-        <br> {{ .Created }}
+            <div class="col1">
+                <p>
+                    <!-- Вывожу первые 300 символов -->
+                    {{ printf "%.300s" .Text }}...
+                </p>
+            </div>
+            <br>
+            <a href="/post?id={{ .ID }}" class="btn btn-outline-secondary btn-sm">Read More</a>
+        </div>
     </div>
 </div>
 <br> {{ end }} {{ end }}

@@ -1,13 +1,8 @@
-{{ template "base" . }}
-
-{{ define "title" }}Post page{{ end }}
-
-{{ define "navbar" }}
+{{ template "base" . }} {{ define "title" }}Post page{{ end }} {{ define "navbar" }}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">Forum</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -37,44 +32,58 @@
         </div>
     </div>
 </nav>
-{{ end }}
-
-{{ define "main" }}
+{{ end }} {{ define "main" }}
 
 <!-- POST -->
-<div class="card text-center">
-    <div class="card-header">
-        <h5 class="card-title">{{ .Post.Title }}</h5>
-    </div>
-    <div class="card-body">
-        <p class="card-title">
-            {{ .Post.Text }}
-        </p>
-        <a href="/user/profile?login={{ .Post.UserLogin }}" class="btn btn-primary">{{ .Post.UserLogin }}</a>
-    </div>
-    <div class="card-footer text-muted">
-        {{ range .Post.Tags}}
-        <a href="/filter?tag={{ . }}">{{ . }}</a>
-        {{ end }}
-        <br>
-        {{ .Post.Created }}
-        <form action="/post/vote" method="POST">
-            <label><button class="btn btn-success" name="like" value="{{ .Post.ID }}">Like</button> -
-                {{ .Post.Votes.Like }}</label>
-            <label><button class="btn btn-danger" name="dislike" value="{{ .Post.ID }}">Dislike</button> -
-                {{ .Post.Votes.Dislike }}</label>
-        </form>
+<div class="conatiner mb80">
+    <div class="vtimeline-block">
+        <div class="vtimeline-content">
+            <img src="/static/img/fuflik.png" alt="" class="img-fluid mb20">
+            <a href="/post?id={{ .Post.ID }}">
+                <h3>{{ .Post.Title }}</h3>
+            </a>
+            <ul class="post-meta list-inline">
+                <li class="list-inline-item">
+                    <i class="fa fa-user-circle-o"></i> <a href="/user/profile?login={{ .Post.UserLogin }}">{{
+                        .Post.UserLogin
+                        }}</a>
+                </li>
+                <li class="list-inline-item">
+                    <i class="fa fa-calendar-o"></i> {{ .Post.Created }}
+                </li>
+            </ul>
+            <div class="col1">
+                <p>
+                    {{ .Post.Text }}
+                </p>
+            </div>
+            <br>
+            <li class="list-inline-item">
+                Tags: {{ range .Post.Tags}}
+                <a href="/filter?tag={{ . }}">{{ . }}</a> {{ end }}
+            </li>
+            <hr>
+            <li class="list-inline-item">
+                <form action="/post/vote" method="POST">
+                    <label><button class="btn btn-success" name="like" value="{{ .Post.ID }}">Like</button> -
+                        {{ .Post.Votes.Like }}</label>
+                    <label><button class="btn btn-danger" name="dislike" value="{{ .Post.ID }}">Dislike</button>
+                        -
+                        {{ .Post.Votes.Dislike }}</label>
+                </form>
+            </li>
+            <br>
+            <!-- <a href="/post?id={{ .Post.ID }}" class="btn btn-outline-secondary btn-sm">Read More</a> -->
+        </div>
     </div>
 </div>
 <br>
-
 <hr>
 
 <!-- Create Comment -->
 <form action="/create/comment?post={{.Post.ID}}" method="POST">
     <div class="form-floating">
-        <textarea maxlength="200" class="form-control" name="text" placeholder="Leave a comment here"
-            id="floatingTextarea2" style="height: 100px" required></textarea>
+        <textarea maxlength="200" class="form-control" name="text" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" required></textarea>
         <label for="floatingTextarea2">Comments</label>
         <div class="form-text">Maximum of 200 characters</div>
     </div>
@@ -85,9 +94,7 @@
 <!-- Comments -->
 <p class="text-center">Comments</p>
 
-{{ if .Post.Comments }}
-
-{{ range .Post.Comments }}
+{{ if .Post.Comments }} {{ range .Post.Comments }}
 
 <hr>
 
@@ -107,11 +114,8 @@
     </div>
 </div>
 
-{{ end }}
-
-{{ else }}
+{{ end }} {{ else }}
 <hr>
-<h5 class="text-center">There are no comments yet &#9785;</h5>
-{{ end }}
-
-{{ end }}
+<h5 class="text-center">There are no comments yet</h5>
+{{ end }} {{ end }}
+<br>

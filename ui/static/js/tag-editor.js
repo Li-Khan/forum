@@ -6,27 +6,27 @@ class TagEditor {
     Tb_Tags; // new HTMLInputElement();
 
     // ! SETTIGNS Default
-    SBlockSelectorName = '#b_TagEditor';            // visible TagEditor block SelectorName
-    STextBlockSelectorName = '#tb_TagEditor';       // input SelectorName
-    SHasDoubles = false;                            // AddDoubles?
-    SToLower = true;                                // ToLowercase Tag?
-    SMaxTags = 5;                                   // Max Tags Count, 0 == Unlimited
-    STags = [];                                     // Writed Tags
-    SSeparator = ' ';                               // Split by separator
-    SMaxSymbolInTag = 16;                           // Max Size of tag name
+    SBlockSelectorName = '#b_TagEditor'; // visible TagEditor block SelectorName
+    STextBlockSelectorName = '#tb_TagEditor'; // input SelectorName
+    SHasDoubles = false; // AddDoubles?
+    SToLower = true; // ToLowercase Tag?
+    SMaxTags = 10; // Max Tags Count, 0 == Unlimited
+    STags = []; // Writed Tags
+    SSeparator = ' '; // Split by separator
+    SMaxSymbolInTag = 16; // Max Size of tag name
 
     // Inits TagEditor By Settings
     constructor(settings) {
-        // Set Settings
-        this.init_Settings(settings);
-        // Init Inputs and Blocks on html
-        this.B_TagEditor = document.querySelector(this.SBlockSelectorName);
-        this.Tb_Tags = document.querySelector(this.STextBlockSelectorName);
-        this.init_Tb_Input();
-        // Set Tags On input and STags
-        this.RefreshTags();
-    }
-    // Set Default Settings by Settings
+            // Set Settings
+            this.init_Settings(settings);
+            // Init Inputs and Blocks on html
+            this.B_TagEditor = document.querySelector(this.SBlockSelectorName);
+            this.Tb_Tags = document.querySelector(this.STextBlockSelectorName);
+            this.init_Tb_Input();
+            // Set Tags On input and STags
+            this.RefreshTags();
+        }
+        // Set Default Settings by Settings
     init_Settings(settings) {
         this.SBlockSelectorName = (settings.BlockSelectorName) ? settings.BlockSelectorName : this.SBlockSelectorName;
         this.STextBlockSelectorName = (settings.TextBlockSelectorName) ? settings.TextBlockSelectorName : this.STextBlockSelectorName;
@@ -66,48 +66,48 @@ class TagEditor {
     // ! Public Methods
     // Check Tagname for valid
     IsValidName(name) {
-        if (this.SToLower) {
-            name = name.toLowerCase();
-        }
-        if (name == "") {
-            return false
-        } else if (this.SMaxTags != 0 && this.STags.length >= this.SMaxTags) {
-            return false
-        } else if (!this.SHasDoubles && this.STags.includes(name)) {
-            return false
-        } else if (this.SMaxSymbolInTag != 0 && name.length > this.SMaxSymbolInTag) {
-            return false
-        }
-        return true
-    }
-    // Add Tag to TagEditor
-    AddTag(name) {
-        name.split(this.SSeparator).forEach((tagname, index) => {
-            if (!this.IsValidName(tagname)) {
-                return
-            }
             if (this.SToLower) {
-                tagname = tagname.toLowerCase();
+                name = name.toLowerCase();
             }
-            this.STags.push(tagname);
-        });
-        this.RefreshTags();
-    }
-    // Removes last tag from TagEditor
+            if (name == "") {
+                return false
+            } else if (this.SMaxTags != 0 && this.STags.length >= this.SMaxTags) {
+                return false
+            } else if (!this.SHasDoubles && this.STags.includes(name)) {
+                return false
+            } else if (this.SMaxSymbolInTag != 0 && name.length > this.SMaxSymbolInTag) {
+                return false
+            }
+            return true
+        }
+        // Add Tag to TagEditor
+    AddTag(name) {
+            name.split(this.SSeparator).forEach((tagname, index) => {
+                if (!this.IsValidName(tagname)) {
+                    return
+                }
+                if (this.SToLower) {
+                    tagname = tagname.toLowerCase();
+                }
+                this.STags.push(tagname);
+            });
+            this.RefreshTags();
+        }
+        // Removes last tag from TagEditor
     RemoveLastTag() {
-        let name = this.STags.pop();
-        this.RefreshTags();
-        return (name != null) ? name : "";
-    }
-    // Removes tag by name from TagEditor
+            let name = this.STags.pop();
+            this.RefreshTags();
+            return (name != null) ? name : "";
+        }
+        // Removes tag by name from TagEditor
     RemoveTag(name) {
-        this.STags = this.STags.filter(function (value, index, arr) {
-            return value != name;
-        });
-        this.RefreshTags();
-        return (name != null) ? name : "";
-    }
-    // Sets Tags to TagEditor by STags
+            this.STags = this.STags.filter(function(value, index, arr) {
+                return value != name;
+            });
+            this.RefreshTags();
+            return (name != null) ? name : "";
+        }
+        // Sets Tags to TagEditor by STags
     RefreshTags() {
         while (this.B_TagEditor.firstChild != this.Tb_Input) {
             this.B_TagEditor.removeChild(this.B_TagEditor.firstChild);
@@ -142,7 +142,10 @@ class TagEditor {
         btn_remove.innerHTML = '×';
         btn_remove.addEventListener(
             'click',
-            (btn_remove_click != null) ? function () { btn_remove_click(); btn_tag.remove(); } : () => { btn_tag.remove(); }
+            (btn_remove_click != null) ? function() {
+                btn_remove_click();
+                btn_tag.remove();
+            } : () => { btn_tag.remove(); }
         );
         // Construct tag
         btn_tag.appendChild(tag_name);

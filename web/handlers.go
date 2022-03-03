@@ -278,7 +278,7 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if len(data.Post.Tags) > 5 {
+		if len(data.Post.Tags) > 10 {
 			app.badRequest(w)
 			return
 		}

@@ -52,6 +52,9 @@ func (m *ForumModel) GetAllPosts() (*[]models.Post, error) {
 		}
 
 		comments, err := m.getPostComments(post.ID)
+		if err != nil {
+			return nil, err
+		}
 
 		votesPost, err := m.getVotesPost(post.ID)
 		if err != nil {

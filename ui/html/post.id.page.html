@@ -65,10 +65,21 @@
             <hr>
             <li class="list-inline-item">
                 <form action="/post/vote" method="POST">
-                    <label><button class="btn btn-success" name="like" value="{{ .Post.ID }}">Like</button> -
+                    <label><button class="text-success btn btn-color" name="like" value="{{ .Post.ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="like"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path
+                                    d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                            </svg></button>-
                         {{ .Post.Votes.Like }}</label>
-                    <label><button class="btn btn-danger" name="dislike" value="{{ .Post.ID }}">Dislike</button>
-                        -
+                    <label><button class="text-danger btn btn-color" name="dislike" value="{{ .Post.ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="dislike"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path
+                                    d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                            </svg></button>-
                         {{ .Post.Votes.Dislike }}</label>
                 </form>
             </li>
@@ -81,7 +92,7 @@
 <hr>
 
 <!-- Create Comment -->
-<form action="/create/comment?post={{.Post.ID}}" method="POST">
+<!-- <form action="/create/comment?post={{.Post.ID}}" method="POST">
     <div class="form-floating">
         <textarea maxlength="200" class="form-control" name="text" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" required></textarea>
         <label for="floatingTextarea2">Comments</label>
@@ -89,33 +100,62 @@
     </div>
     <br>
     <button class="btn btn-primary">Comment</button>
-</form>
+</form> -->
 
 <!-- Comments -->
-<p class="text-center">Comments</p>
 
-{{ if .Post.Comments }} {{ range .Post.Comments }}
 
-<hr>
+<div class="col-md-7 w-100">
+    <div class="card">
+        <div class="p-3">
+            <h6>Comments</h6>
+        </div>
 
-<div class="card text-center">
-    <h5 class="card-header"><a class="link-dark" href="/user/profile?login={{ .Login }}">{{.Login}}</a></h5>
-    <div class="card-body">
-        <p class="card-text">{{ .Text }}</p>
-    </div>
-    <div class="card-footer text-muted">
-        {{ .Created }}
-        <form action="/comment/vote" method="POST">
-            <label><button class="btn btn-success" name="like" value="{{ .ID }}">Like</button> -
+        <form action="/create/comment?post={{.Post.ID}}" method="POST">
+            <div class="mt-3 d-flex flex-row align-items-center p-3 form-color"> <img src="/static/img/avatar.jpg" width="50" class="rounded-circle mr-2"> <input type="text" name="text" class="form-control" maxlength="200" placeholder="Enter your comment... (Maximum 200 characters)" required> </div>
+            <div class="d-flex">
+                <button class="mx">Comment</button>
+            </div>
+
+        </form>
+
+        {{ if .Post.Comments }} {{ range .Post.Comments }}
+        <div class="mt-2">
+            <hr>
+            <div class="d-flex flex-row p-3"> <img src="/static/img/avatar.jpg" width="40" height="40" class="rounded-circle mr-3">
+                <div class="w-90">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-row align-items-center"> <span class="mr-2"><a
+                                    href="/user/profile?login={{ .Login }}" target="_blank" class="text-dark">{{ .Login
+                                    }}</a></span>
+                        </div> <small>{{ printf "%.10s" .Created }}</small>
+                    </div>
+                    <p class="text-justify mb-0">{{ .Text }}</p>
+                </div>
+            </div>
+        </div>
+
+        <form action="/comment/vote" method="POST" class="mx-2">
+            <label><button class="text-success btn btn-color" name="like" value="{{ .ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="like"><svg xmlns="http://www.w3.org/2000/svg"
+                        width="20" height="20" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        <path
+                            d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                    </svg></button>-
                 {{ .Votes.Like }}</label>
-            <label><button class="btn btn-danger" name="dislike" value="{{ .ID }}">Dislike</button> -
+            <label><button class="text-danger btn btn-color" name="dislike" value="{{ .ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="dislike"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        <path
+                            d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                    </svg></i></button>-
                 {{ .Votes.Dislike }}</label>
         </form>
+        {{ end }} {{ else }}
+        <hr>
+        <h5 class="text-center">There are no comments yet</h5>
+        <br> {{ end }} <br> {{ end }}
+        <br>
     </div>
 </div>
-
-{{ end }} {{ else }}
-<hr>
-<h5 class="text-center">There are no comments yet</h5>
-{{ end }} {{ end }}
-<br>

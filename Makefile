@@ -9,8 +9,14 @@ run:
 .PHONY: docker
 
 docker:
-	docker volume create li-khan-forum
-	docker build -t forum .
+	docker-compose up -d
+
+	@echo "\n=========================\n"
+	docker images
+
+	@echo "\n=========================\n"
+	@echo "docker containers"
+	docker ps -a
 
 	@echo "Running server:"
 	@echo "\n***************************"
@@ -19,9 +25,21 @@ docker:
 	@echo "*                         *"
 	@echo "***************************\n"
 
-	docker run --rm --name web -p 27969:27960 -v li-khan-forum:/app/ forum
+docker-stop:
+	docker-compose down
+
+docker-catalog:
+	@echo "\n=========================\n"
+	@echo "browse the catalog"
+	docker exec -it web ls -la
+	@echo "\n========================="
 
 docker-delete:
-	docker rmi forum
+	docker-compose down
+	docker rmi forum_app:latest
+	docker rmi golang:1.17
+
+docker-delete-volume:
+	docker volume rm forum_web
 
 .DEFAULT_GOAL := build

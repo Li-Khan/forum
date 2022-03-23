@@ -17,11 +17,20 @@
                     <!-- Create Post Button -->
                     <a class="btn btn-secondary" href="/create/post" role="button">Create Post</a>
                 </li>
-                <li class="nav-item mx-1">
+                <li class="nav-item mb-2 mx-1">
                     <!-- Modal button -->
                     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         Filter by tags
                     </button>
+                </li>
+                <li class="nav-item mb-2 mx-1">
+                    <a class="btn btn-secondary" href="/filter/liked" role="button">Liked</a>
+                </li>
+                <li class="nav-item mb-2 mx-1">
+                    <a class="btn btn-secondary" href="/filter/disliked" role="button">Disliked</a>
+                </li>
+                <li class="nav-item mb-2 mx-1">
+                    <a class="btn btn-secondary" href="/user/profile" role="button">My posts</a>
                 </li>
                 {{ if eq .IsSession false }}
                 <li class="nav-item">
@@ -74,7 +83,7 @@
                         }}</a>
                 </li>
                 <li class="list-inline-item">
-                    <i class="fa fa-calendar-o"></i> {{ .Created }}
+                    {{ .Created }}
                 </li>
             </ul>
             <div class="col1">

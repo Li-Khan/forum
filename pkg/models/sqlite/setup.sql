@@ -19,7 +19,16 @@ CREATE TABLE IF NOT EXISTS "posts" (
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("user_id") REFERENCES "users"("id")
 );
-
+-- VOTE POST TABLE --
+CREATE TABLE IF NOT EXISTS "vote_post" (
+	"id"	INTEGER NOT NULL,
+	"user_id"	INTEGER NOT NULL,
+	"post_id"	INTEGER NOT NULL,
+	"vote"	INTEGER NOT NULL,
+	FOREIGN KEY("post_id") REFERENCES "posts"("id"),
+	FOREIGN KEY("user_id") REFERENCES "users"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
 -- TAGS TABLE --
 CREATE TABLE IF NOT EXISTS "tags" (
 	"id"	INTEGER NOT NULL UNIQUE,
@@ -50,16 +59,7 @@ CREATE TABLE IF NOT EXISTS "comments" (
 	FOREIGN KEY("post_id") REFERENCES "posts"("id")
 );
 
--- VOTE POST TABLE --
-CREATE TABLE IF NOT EXISTS "vote_post" (
-	"id"	INTEGER NOT NULL,
-	"user_id"	INTEGER NOT NULL,
-	"post_id"	INTEGER NOT NULL,
-	"vote"	INTEGER NOT NULL,
-	FOREIGN KEY("post_id") REFERENCES "posts"("id"),
-	FOREIGN KEY("user_id") REFERENCES "users"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
+
 
 -- VOTE COMMENT TABLE --
 CREATE TABLE IF NOT EXISTS "vote_comment" (

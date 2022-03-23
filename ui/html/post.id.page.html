@@ -13,6 +13,10 @@
             </ul>
 
             <ul class="navbar-nav">
+                <li class="nav-item mb-2 mx-1">
+                    <!-- Create Post Button -->
+                    <a class="btn btn-secondary" href="/create/post" role="button">Create Post</a>
+                </li>
                 {{ if eq .IsSession false }}
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="/user/signin">Sign in</a>
@@ -49,7 +53,7 @@
                         }}</a>
                 </li>
                 <li class="list-inline-item">
-                    <i class="fa fa-calendar-o"></i> {{ .Post.Created }}
+                    {{ .Post.Created }}
                 </li>
             </ul>
             <div class="col1">
@@ -64,43 +68,37 @@
             </li>
             <hr>
             <li class="list-inline-item">
-                <form action="/post/vote" method="POST">
-                    <label><button class="text-success btn btn-color" name="like" value="{{ .Post.ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="like"><svg
-                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                class="bi bi-emoji-smile" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                <path
-                                    d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
-                            </svg></button>-
-                        {{ .Post.Votes.Like }}</label>
-                    <label><button class="text-danger btn btn-color" name="dislike" value="{{ .Post.ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="dislike"><svg
-                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                class="bi bi-emoji-frown" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                <path
-                                    d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
-                            </svg></button>-
-                        {{ .Post.Votes.Dislike }}</label>
-                </form>
+                <div class="d-flex">
+                    <form action="/post/vote?id={{ .Post.ID }}&vote=1" method="POST">
+                        <label><button class="text-success btn btn-color" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="like"><svg xmlns="http://www.w3.org/2000/svg"
+                                    width="20" height="20" fill="currentColor" class="bi bi-emoji-smile"
+                                    viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path
+                                        d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                                </svg></button>-
+                            {{ .Post.Votes.Like }}</label>
+                    </form>
+                    <form class="mx-1" action="/post/vote?id={{ .Post.ID }}&vote=-1" method="POST">
+                        <label><button class="text-danger btn btn-color" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="dislike"><svg xmlns="http://www.w3.org/2000/svg"
+                                    width="20" height="20" fill="currentColor" class="bi bi-emoji-frown"
+                                    viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path
+                                        d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                                </svg></button>-
+                            {{ .Post.Votes.Dislike }}</label>
+                    </form>
+                </div>
             </li>
             <br>
-            <!-- <a href="/post?id={{ .Post.ID }}" class="btn btn-outline-secondary btn-sm">Read More</a> -->
         </div>
     </div>
 </div>
 <br>
 <hr>
-
-<!-- Create Comment -->
-<!-- <form action="/create/comment?post={{.Post.ID}}" method="POST">
-    <div class="form-floating">
-        <textarea maxlength="200" class="form-control" name="text" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" required></textarea>
-        <label for="floatingTextarea2">Comments</label>
-        <div class="form-text">Maximum of 200 characters</div>
-    </div>
-    <br>
-    <button class="btn btn-primary">Comment</button>
-</form> -->
 
 <!-- Comments -->
 
@@ -134,24 +132,28 @@
                 </div>
             </div>
         </div>
-
-        <form action="/comment/vote" method="POST" class="mx-2">
-            <label><button class="text-success btn btn-color" name="like" value="{{ .ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="like"><svg xmlns="http://www.w3.org/2000/svg"
-                        width="20" height="20" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                        <path
-                            d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
-                    </svg></button>-
-                {{ .Votes.Like }}</label>
-            <label><button class="text-danger btn btn-color" name="dislike" value="{{ .ID }}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="dislike"><svg
-                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                        class="bi bi-emoji-frown" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                        <path
-                            d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
-                    </svg></i></button>-
-                {{ .Votes.Dislike }}</label>
-        </form>
+        <div class="d-flex">
+            <form action="/comment/vote?id={{ .ID }}&vote=1" method="POST" class="mx-2">
+                <label><button class="text-success btn btn-color" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        title="like"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path
+                                d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                        </svg></button>-
+                    {{ .Votes.Like }}</label>
+            </form>
+            <form class="mx-1" action="/comment/vote?id={{ .ID }}&vote=-1" method="POST" class="mx-2">
+                <label><button class="text-danger btn btn-color" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        title="dislike"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            fill="currentColor" class="bi bi-emoji-frown" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path
+                                d="M4.285 12.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z" />
+                        </svg></i></button>-
+                    {{ .Votes.Dislike }}</label>
+            </form>
+        </div>
         {{ end }} {{ else }}
         <hr>
         <h5 class="text-center">There are no comments yet</h5>

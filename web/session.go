@@ -54,7 +54,6 @@ func isSession(r *http.Request) bool {
 func oneUser(login, uuid string) {
 	cookie.Range(func(key, value interface{}) bool {
 		if login == fmt.Sprint(value) {
-			fmt.Println(login)
 			cookie.Delete(key)
 		}
 		return true
@@ -79,6 +78,6 @@ func SessionGC() {
 			expireSession.mu.Unlock()
 			return true
 		})
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 1)
 	}
 }

@@ -58,6 +58,6 @@ func main() {
 	go web.SessionGC()
 
 	infoLog.Printf("Starting the server on %s", *addr)
-	err = srv.ListenAndServe()
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	errorLog.Println(err)
 }

@@ -8,7 +8,7 @@ import (
 
 // OpenDB ...
 func OpenDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", dsn)
+	db, err := sql.Open("sqlite3", fmt.Sprintf("./pkg/models/sqlite/%s", dsn))
 	if err != nil {
 		return nil, err
 	}

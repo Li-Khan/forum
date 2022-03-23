@@ -48,7 +48,7 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.render(w, r, "home.page.html", &templateData{
-		Posts:     *posts,
+		Posts:     posts,
 		Tags:      tags,
 		IsSession: isSession(r),
 	})
@@ -76,6 +76,11 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 			Created:         time,
 		}
 
+		if strings.TrimSpace(data.User.Email) == "" || strings.TrimSpace(data.User.Login) == "" {
+			app.badRequest(w)
+			return
+		}
+
 		if len(data.User.Login) > 16 {
 			app.badRequest(w)
 			return
@@ -89,7 +94,7 @@ func (app *Application) signup(w http.ResponseWriter, r *http.Request) {
 		// Valid characters for the login
 		loginConvention := "^[a-zA-Z0-9]*$"
 		// Valid characters for the email
-		emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+		emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,4}$`)
 
 		if re, _ := regexp.Compile(loginConvention); !re.MatchString(data.User.Login) {
 			app.badRequest(w)
@@ -154,6 +159,11 @@ func (app *Application) signin(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		login := r.FormValue("login")
 		password := fmt.Sprintf(Salt, r.FormValue("password"))
+
+		if strings.TrimSpace(login) == "" || strings.TrimSpace(password) == "" {
+			app.badRequest(w)
+			return
+		}
 
 		user, err := app.Forum.GetUser(login)
 		if err != nil {
@@ -238,7 +248,7 @@ func (app *Application) profile(w http.ResponseWriter, r *http.Request) {
 
 	var userPosts []models.Post
 
-	for _, post := range *posts {
+	for _, post := range posts {
 		if post.UserLogin == login {
 			userPosts = append(userPosts, post)
 		}
@@ -271,6 +281,11 @@ func (app *Application) createPost(w http.ResponseWriter, r *http.Request) {
 			Text:    r.FormValue("text"),
 			Tags:    strings.Split(r.FormValue("tags"), " "),
 			Created: time,
+		}
+
+		if strings.TrimSpace(data.Post.Title) == "" || strings.TrimSpace(data.Post.Text) == "" {
+			app.badRequest(w)
+			return
 		}
 
 		if utf8.RuneCountInString(data.Post.Title) > 58 || utf8.RuneCountInString(data.Post.Text) > 10000 {
@@ -364,6 +379,11 @@ func (app *Application) createComment(w http.ResponseWriter, r *http.Request) {
 		Created: time,
 	}
 
+	if strings.TrimSpace(comment.Text) == "" {
+		app.badRequest(w)
+		return
+	}
+
 	if utf8.RuneCountInString(comment.Text) > 200 {
 		app.badRequest(w)
 		return
@@ -408,7 +428,7 @@ func (app *Application) post(w http.ResponseWriter, r *http.Request) {
 	data := &templateData{IsSession: isSession(r)}
 
 	var isFound bool
-	for _, post := range *posts {
+	for _, post := range posts {
 		if post.ID == int64(postID) {
 			isFound = true
 			data.Post = post
@@ -435,37 +455,24 @@ func (app *Application) postVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	like := r.FormValue("like")
-	dislike := r.FormValue("dislike")
-
-	if (like == "" && dislike == "") || (like != "" && dislike != "") {
+	postID, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
 		app.badRequest(w)
 		return
 	}
 
-	var vote int
-	var postID int
-	var err error
-
-	if like != "" {
-		postID, err = strconv.Atoi(like)
-		if err != nil {
-			app.badRequest(w)
-			return
-		}
-		vote = 1
-	} else {
-		postID, err = strconv.Atoi(dislike)
-		if err != nil {
-			app.badRequest(w)
-			return
-		}
-		vote = -1
+	vote, err := strconv.Atoi(r.URL.Query().Get("vote"))
+	if err != nil {
+		app.badRequest(w)
+		return
 	}
 
-	c, _ := r.Cookie(cookieName)
-	value, _ := cookie.Load(c.Value)
-	login := fmt.Sprint(value)
+	if vote != 1 && vote != -1 {
+		app.badRequest(w)
+		return
+	}
+
+	login := getLogin(r)
 
 	user, err := app.Forum.GetUser(login)
 	if err != nil {
@@ -501,44 +508,38 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	like := r.FormValue("like")
-	dislike := r.FormValue("dislike")
-
-	if (like == "" && dislike == "") || (like != "" && dislike != "") {
+	commentID, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		fmt.Println(513)
 		app.badRequest(w)
 		return
 	}
 
-	var vote int
-	var commentID int
-	var err error
+	vote, err := strconv.Atoi(r.URL.Query().Get("vote"))
+	if err != nil {
+		fmt.Println(520)
+		app.badRequest(w)
+		return
+	}
 
-	if like != "" {
-		commentID, err = strconv.Atoi(like)
-		if err != nil {
-			app.badRequest(w)
-			return
-		}
-		vote = 1
-	} else {
-		commentID, err = strconv.Atoi(dislike)
-		if err != nil {
-			app.badRequest(w)
-			return
-		}
-		vote = -1
+	if vote != 1 && vote != -1 {
+		fmt.Println(526)
+		app.badRequest(w)
+		return
 	}
 
 	login := getLogin(r)
 
 	user, err := app.Forum.GetUser(login)
 	if err != nil {
-		app.serverError(w, err)
+		fmt.Println(535)
+		app.badRequest(w)
 		return
 	}
 
 	comment, err := app.Forum.GetCommentByID(int64(commentID))
 	if err == sql.ErrNoRows {
+		app.ErrorLog.Println(err)
 		app.badRequest(w)
 		return
 	}
@@ -558,6 +559,8 @@ func (app *Application) commentVote(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
+	isSession := isSession(r)
+
 	tag := r.URL.Query().Get("tag")
 
 	posts, err := app.Forum.GetAllPosts()
@@ -566,9 +569,35 @@ func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tags, err := app.Forum.GetAllTags()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	tagsPosts := posts
+	if tag != "" {
+		tagsPosts, err = app.filterByTag(tag, posts)
+		if err != nil {
+			app.notFound(w)
+			return
+		}
+	} else {
+		app.notFound(w)
+		return
+	}
+
+	app.render(w, r, "filter.tag.page.html", &templateData{
+		Posts:     tagsPosts,
+		IsSession: isSession,
+		Tags:      tags,
+	})
+}
+
+func (app *Application) filterByTag(tag string, posts []models.Post) ([]models.Post, error) {
 	tagsPosts := []models.Post{}
 
-	for _, post := range *posts {
+	for _, post := range posts {
 		for _, postTag := range post.Tags {
 			if postTag == tag {
 				tagsPosts = append(tagsPosts, post)
@@ -577,12 +606,70 @@ func (app *Application) filter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(tagsPosts) == 0 {
-		app.notFound(w)
+		return nil, fmt.Errorf("not found")
+	}
+	return tagsPosts, nil
+}
+
+func (app *Application) likedPosts(w http.ResponseWriter, r *http.Request) {
+	if !isSession(r) {
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
 		return
 	}
 
-	app.render(w, r, "filter.tag.page.html", &templateData{
-		Posts:     tagsPosts,
-		IsSession: isSession(r),
+	if r.Method != http.MethodGet {
+		app.methodNotAllowed(w)
+		return
+	}
+
+	login := getLogin(r)
+
+	posts, err := app.Forum.GetVotePosts(login, 1)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	tags, err := app.Forum.GetAllTags()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.render(w, r, "home.page.html", &templateData{
+		Posts:     *posts,
+		IsSession: true,
+		Tags:      tags,
+	})
+}
+
+func (app *Application) dislikedPosts(w http.ResponseWriter, r *http.Request) {
+	if !isSession(r) {
+		http.Redirect(w, r, "/user/signin", http.StatusSeeOther)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		app.methodNotAllowed(w)
+		return
+	}
+
+	login := getLogin(r)
+
+	posts, err := app.Forum.GetVotePosts(login, -1)
+	if err != nil {
+		app.serverError(w, err)
+	}
+
+	tags, err := app.Forum.GetAllTags()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.render(w, r, "home.page.html", &templateData{
+		Posts:     *posts,
+		IsSession: true,
+		Tags:      tags,
 	})
 }

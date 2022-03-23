@@ -1,0 +1,14 @@
+version: '3'
+services:
+  app:
+    container_name: web
+    build: .
+    volumes:
+      - web:/app/pkg/models/sqlite
+    ports:
+      - '27969:27960'
+    restart: unless-stopped
+
+volumes:
+  web:
+    external: false

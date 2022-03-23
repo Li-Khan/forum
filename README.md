@@ -112,6 +112,7 @@ This project will help you learn about:
   3. in the address bar, write `localhost:27960`
 
 ### Run docker:
+  #### Attention: you must have docker compose installed
   1. Write to the terminal `make docker`
   2. Open the browser
   3. in the address bar, write `localhost:27969`
@@ -129,6 +130,34 @@ This project will help you learn about:
 </details>
 
 <details>
+<summary>How to view the docker catalog</summary>
+  
+  1. Write to the terminal `make docker-catalog`
+  
+</details>
+
+<details>
+<summary>How to stop docker</summary>
+  
+  1. Write to the terminal `make docker-stop`
+
+</details>
+
+<details>
+<summary>How to remove docker</summary>
+  
+  1. Write to the terminal `make docker-delete`
+  
+</details>
+
+<details>
+<summary>how to remove docker volume</summary>
+  
+  1. Write to the terminal `make docker-delete-volume`
+  
+</details>
+
+<details>
 <summary>How to change the port</summary>
 
   1. Write to the terminal `go run ./cmd -addr=:port`
@@ -137,7 +166,13 @@ This project will help you learn about:
 
 </details>
 
+## ERD - Entity Relationship Diagram
+![alt text](./ui/static/img/erd.png "Entity-Relationship model")
+
 ## Please note 
 *Category* feature as per project requirements has been replaced by *tags* features (to be able adding any tags)
+
+## Where to view commits
+All commits can be viewed here https://github.com/Li-Khan/forum
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/Li-Khan/forum)](https://goreportcard.com/report/github.com/Li-Khan/forum)

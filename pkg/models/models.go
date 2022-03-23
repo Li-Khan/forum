@@ -45,10 +45,10 @@ type Comment struct {
 
 // Like ...
 type Like struct {
-	ID     int64 `json:"id"`
-	UserID int64 `json:"userId"`
-	PostID int64 `json:"postId"`
-	IsLike bool  `json:"like"`
+	ID     int64 `json:"id,omitempty"`
+	UserID int64 `json:"user_id,omitempty"`
+	PostID int64 `json:"post_id,omitempty"`
+	IsLike bool  `json:"is_like,omitempty"`
 }
 
 // Errors ...

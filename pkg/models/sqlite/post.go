@@ -21,8 +21,9 @@ func (m *ForumModel) CreatePost(post *models.Post) (int64, error) {
 }
 
 // GetAllPosts - retrieves information about all posts from the database
-func (m *ForumModel) GetAllPosts() (*[]models.Post, error) {
+func (m *ForumModel) GetAllPosts() ([]models.Post, error) {
 	stmt := `SELECT * FROM "main"."posts" ORDER BY "created" DESC`
+
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
 		return nil, err
@@ -68,6 +69,41 @@ func (m *ForumModel) GetAllPosts() (*[]models.Post, error) {
 		post.Tags = nil
 	}
 
+	return posts, nil
+}
+
+func (m *ForumModel) GetVotePosts(login string, vote int) (*[]models.Post, error) {
+	stmt := `
+	SELECT posts.id, posts.user_login, posts.title, posts.text, posts.created
+	FROM posts
+	INNER JOIN vote_post
+	ON posts.id=vote_post.post_id
+	WHERE vote_post.vote = ? AND vote_post.user_id = ?`
+
+	user, err := m.GetUser(login)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := m.DB.Query(stmt, vote, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	posts := []models.Post{}
+	post := models.Post{}
+	id := 0
+	for rows.Next() {
+		err = rows.Scan(&post.ID, &post.UserLogin, &post.Title, &post.Text, &post.Created)
+		if err != nil {
+			return nil, err
+		}
+		if id != int(post.ID) {
+			posts = append(posts, post)
+		}
+		id = int(post.ID)
+	}
 	return &posts, nil
 }
 
@@ -164,6 +200,7 @@ func (m *ForumModel) getVotesPost(id int64) (*models.Vote, error) {
 			votes.Dislike++
 		}
 	}
+
 	return &votes, nil
 }
 
